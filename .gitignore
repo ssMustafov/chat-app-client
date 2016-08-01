@@ -1,12 +1,13 @@
-*.class
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
-*.jar
-*.war
-*.ear
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+/build/
+dist/
+jspm_packages/
+node_modules/
+sublime.sublime-workspace
+.sass-cache/
+.project
+coverage/
+reports/
+build-instrumented/
+build-instrumented-tmp/
+.idea/
+npm-debug.log
