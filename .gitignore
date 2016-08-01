@@ -2,6 +2,7 @@
 dist/
 jspm_packages/
 node_modules/
+bower_components/
 sublime.sublime-workspace
 .sass-cache/
 .project
