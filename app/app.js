@@ -1,11 +1,11 @@
 'use strict';
 
 // Declare app level module which depends on views, and components
-angular.module('myApp', [
+angular.module('chatApp', [
     'ngRoute',
-    'myApp.view1',
-    'myApp.view2',
-    'myApp.version'
+    'chatApp.view1',
+    'chatApp.view2',
+    'chatApp.version'
 ]).config(['$locationProvider', '$routeProvider', function ($locationProvider, $routeProvider) {
     $locationProvider.hashPrefix('!');
 
