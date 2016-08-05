@@ -45,7 +45,7 @@ angular.module('chatApp.view1', ['ngRoute'])
             }
         };
     })
-    .controller('View1Ctrl', ['$scope', 'atmosphereService', function ($scope, atmosphereService) {
+    .controller('View1Ctrl', ['$scope', 'atmosphereService', 'backendUrl', function ($scope, atmosphereService, backendUrl) {
         $scope.model = {
             transport: 'websocket',
             messages: []
@@ -53,8 +53,10 @@ angular.module('chatApp.view1', ['ngRoute'])
 
         var socket;
 
+        var url = backendUrl.replace(/http\:|https\:/, "ws:");
+
         var request = {
-            url: 'ws://localhost:8080/chat/chat',
+            url: url + '/chat',
             contentType: 'application/json',
             logLevel: 'debug',
             transport: 'websocket',

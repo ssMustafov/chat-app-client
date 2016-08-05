@@ -12,3 +12,4 @@ build-instrumented/
 build-instrumented-tmp/
 .idea/
 npm-debug.log
+ngConstants.js
