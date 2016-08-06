@@ -1,11 +1,11 @@
 'use strict';
 
-angular.module('chatApp.view1', ['ngRoute'])
+angular.module('chatApp.chat.room', ['ngRoute'])
 
     .config(['$routeProvider', function ($routeProvider) {
-        $routeProvider.when('/view1', {
-            templateUrl: 'view1/view1.html',
-            controller: 'View1Ctrl'
+        $routeProvider.when('/chat/room/:id', {
+            templateUrl: 'chat-room/chat-room.html',
+            controller: 'ChatRoomCtrl'
         });
     }])
     .service('atmosphereService', function ($rootScope) {
@@ -45,12 +45,12 @@ angular.module('chatApp.view1', ['ngRoute'])
             }
         };
     })
-    .controller('View1Ctrl', ['$scope', 'atmosphereService', 'backendUrl', function ($scope, atmosphereService, backendUrl) {
+    .controller('ChatRoomCtrl', ['$scope', 'atmosphereService', 'backendUrl', '$routeParams', function ($scope, atmosphereService, backendUrl, $routeParams) {
         $scope.model = {
             transport: 'websocket',
             messages: []
         };
-
+        console.log($routeParams.id);
         var socket;
 
         var url = backendUrl.replace(/http\:|https\:/, "ws:");
