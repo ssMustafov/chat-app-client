@@ -7,7 +7,7 @@ gulp.task('start', function () {
     var backend = args.backend || 'http://localhost:8080/chat';
 
     return ngConstant({
-        constants: {"backendUrl": backend},
+        constants: {"BACKEND_URL": backend},
         name: 'chatApp.constants',
         stream: true
     })

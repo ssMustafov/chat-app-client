@@ -8,144 +8,62 @@ angular.module('chatApp.chat.room', ['ngRoute'])
             controller: 'ChatRoomCtrl'
         });
     }])
-    .service('atmosphereService', function ($rootScope) {
-        var responseParameterDelegateFunctions = ['onOpen', 'onClientTimeout', 'onReopen', 'onMessage', 'onClose', 'onError'];
-        var delegateFunctions = responseParameterDelegateFunctions;
-        delegateFunctions.push('onTransportFailure');
-        delegateFunctions.push('onReconnect');
-
-        return {
-            subscribe: function (r) {
-                var result = {};
-                angular.forEach(r, function (value, property) {
-                    if (typeof value === 'function' && delegateFunctions.indexOf(property) >= 0) {
-                        if (responseParameterDelegateFunctions.indexOf(property) >= 0)
-                            result[property] = function (response) {
-                                $rootScope.$apply(function () {
-                                    r[property](response);
-                                });
-                            };
-                        else if (property === 'onTransportFailure')
-                            result.onTransportFailure = function (errorMsg, request) {
-                                $rootScope.$apply(function () {
-                                    r.onTransportFailure(errorMsg, request);
-                                });
-                            };
-                        else if (property === 'onReconnect')
-                            result.onReconnect = function (request, response) {
-                                $rootScope.$apply(function () {
-                                    r.onReconnect(request, response);
-                                });
-                            };
-                    } else
-                        result[property] = r[property];
-                });
-
-                return atmosphere.subscribe(result);
-            }
-        };
-    })
-    .controller('ChatRoomCtrl', ['$scope', 'atmosphereService', 'backendUrl', '$routeParams', function ($scope, atmosphereService, backendUrl, $routeParams) {
+    .controller('ChatRoomCtrl', ['$scope', '$routeParams', 'ChatService', 'EventService', 'CHAT_EVENTS', function ($scope, $routeParams, chatService, eventService, chatEvents) {
         $scope.model = {
             transport: 'websocket',
             messages: []
         };
-        console.log($routeParams.id);
-        var socket;
 
-        var url = backendUrl.replace(/http\:|https\:/, "ws:");
-
-        var request = {
-            url: url + '/chat',
-            contentType: 'application/json',
-            logLevel: 'debug',
-            transport: 'websocket',
-            trackMessageLength: true,
-            reconnectInterval: 5000,
-            enableXDR: true,
-            timeout: 0
-        };
-
-        request.onOpen = function (response) {
+        function onOpen(response) {
             $scope.model.transport = response.transport;
             $scope.model.connected = true;
-            $scope.model.content = 'Atmosphere connected using '
-                + response.transport;
-        };
+            $scope.model.content = 'Atmosphere connected using ' + response.transport;
+        }
 
-        request.onClientTimeout = function (response) {
+        function onClientTimeout(request) {
             $scope.model.content = 'Client closed the connection after a timeout. Reconnecting in '
                 + request.reconnectInterval;
             $scope.model.connected = false;
-            socket
-                .push(atmosphere.util
-                    .stringifyJSON({
-                        author: author,
-                        message: 'is inactive and closed the connection. Will reconnect in '
-                        + request.reconnectInterval
-                    }));
-            setTimeout(function () {
-                socket = atmosphereService.subscribe(request);
-            }, request.reconnectInterval);
-        };
+        }
 
-        request.onReopen = function (response) {
+        function onReopen(response) {
             $scope.model.connected = true;
-            $scope.model.content = 'Atmosphere re-connected using '
-                + response.transport;
-        };
+            $scope.model.content = 'Atmosphere re-connected using ' + response.transport;
+        }
 
-        // For demonstration of how you can customize the fallbackTransport using
-        // the onTransportFailure function
-        request.onTransportFailure = function (errorMsg, request) {
-            atmosphere.util.info(errorMsg);
-            request.fallbackTransport = 'long-polling';
+        function onTransportFailure(request) {
             $scope.model.header = 'Atmosphere Chat. Default transport is WebSocket, fallback is '
                 + request.fallbackTransport;
-        };
+        }
 
-        request.onMessage = function (response) {
-            var responseText = response.responseBody;
-            try {
-                var message = atmosphere.util.parseJSON(responseText);
-                if (!$scope.model.logged && $scope.model.name)
-                    $scope.model.logged = true;
-                else {
-                    var date = typeof (message.time) === 'string' ? parseInt(message.time)
-                        : message.time;
-                    $scope.model.messages.push({
-                        author: message.author,
-                        date: new Date(date),
-                        text: message.message
-                    });
-                }
-            } catch (e) {
-                console.error("Error parsing JSON: ", responseText);
-                throw e;
+        function onMessage(message) {
+            if (!$scope.model.logged && $scope.model.name)
+                $scope.model.logged = true;
+            else {
+                var date = typeof (message.time) === 'string' ? parseInt(message.time)
+                    : message.time;
+                $scope.model.messages.push({
+                    author: message.author,
+                    date: new Date(date),
+                    text: message.message
+                });
             }
-        };
+        }
 
-        request.onClose = function (response) {
+        function onClose() {
             $scope.model.connected = false;
             $scope.model.content = 'Server closed the connection after a timeout';
-            socket.push(atmosphere.util.stringifyJSON({
-                author: $scope.model.name,
-                message: 'disconnecting'
-            }));
-        };
+        }
 
-        request.onError = function (response) {
+        function onError() {
             $scope.model.content = "Sorry, but there's some problem with your socket or the server is down";
             $scope.model.logged = false;
-        };
+        }
 
-        request.onReconnect = function (request, response) {
-            $scope.model.content = 'Connection lost. Trying to reconnect '
-                + request.reconnectInterval;
+        function onReconnect(request) {
+            $scope.model.content = 'Connection lost. Trying to reconnect ' + request.reconnectInterval;
             $scope.model.connected = false;
-        };
-
-        socket = atmosphereService.subscribe(request);
+        }
 
         var input = $('#input');
         input.keydown(function (event) {
@@ -157,12 +75,21 @@ angular.module('chatApp.chat.room', ['ngRoute'])
                     if (!$scope.model.name)
                         $scope.model.name = msg;
 
-                    socket.push(atmosphere.util.stringifyJSON({
+                    chatService.sendMessage({
                         author: $scope.model.name,
                         message: msg
-                    }));
+                    });
                     $(me).val('');
                 });
             }
         });
+
+        eventService.subscribe(chatEvents.ON_OPEN, onOpen);
+        eventService.subscribe(chatEvents.ON_CLIENT_TIMEOUT, onClientTimeout);
+        eventService.subscribe(chatEvents.ON_REOPEN, onReopen);
+        eventService.subscribe(chatEvents.ON_TRANSPORT_FAILURE, onTransportFailure);
+        eventService.subscribe(chatEvents.ON_MESSAGE, onMessage);
+        eventService.subscribe(chatEvents.ON_ERROR, onError);
+        eventService.subscribe(chatEvents.ON_RECONNECT, onReconnect);
+        eventService.subscribe(chatEvents.ON_CLOSE, onClose);
     }]);

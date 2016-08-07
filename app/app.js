@@ -5,7 +5,10 @@ angular.module('chatApp', [
     'chatApp.chat.room',
     'chatApp.view2',
     'chatApp.version',
-    'chatApp.constants'
+    'chatApp.constants',
+    'chatApp.atmosphere.service',
+    'chatApp.chat.service',
+    'chatApp.event.service'
 ]).config(['$locationProvider', '$routeProvider', function ($locationProvider, $routeProvider) {
     $locationProvider.hashPrefix('!');
 
