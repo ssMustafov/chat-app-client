@@ -21,8 +21,11 @@ angular.module('chatApp.chat.service', [])
             contentType: 'application/json',
             logLevel: 'debug',
             transport: 'websocket',
+            fallbackTransport: 'websocket',
             trackMessageLength: true,
             reconnectInterval: 5000,
+            maxReconnectOnClose: 500,
+            reconnectOnServerError: true,
             enableXDR: true,
             timeout: 0
         };
@@ -62,11 +65,8 @@ angular.module('chatApp.chat.service', [])
             });
         };
 
-        // For demonstration of how you can customize the fallbackTransport using
-        // the onTransportFailure function
-        request.onTransportFailure = function (errorMsg, request) {
+        request.onTransportFailure = function (errorMsg) {
             atmosphere.util.info(errorMsg);
-            request.fallbackTransport = 'long-polling';
 
             eventService.fire(events.ON_TRANSPORT_FAILURE, {
                 fallbackTransport: request.fallbackTransport
