@@ -16,18 +16,15 @@ angular.module('chatApp.chat.room', ['ngRoute'])
 
         function onOpen(response) {
             $scope.model.transport = response.transport;
-            $scope.model.connected = true;
             $scope.model.content = 'Atmosphere connected using ' + response.transport;
         }
 
         function onClientTimeout(request) {
             $scope.model.content = 'Client closed the connection after a timeout. Reconnecting in '
                 + request.reconnectInterval;
-            $scope.model.connected = false;
         }
 
         function onReopen(response) {
-            $scope.model.connected = true;
             $scope.model.content = 'Atmosphere re-connected using ' + response.transport;
         }
 
@@ -37,32 +34,25 @@ angular.module('chatApp.chat.room', ['ngRoute'])
         }
 
         function onMessage(message) {
-            if (!$scope.model.logged && $scope.model.name)
-                $scope.model.logged = true;
-            else {
-                var date = typeof (message.time) === 'string' ? parseInt(message.time)
-                    : message.time;
-                $scope.model.messages.push({
-                    author: message.author,
-                    date: new Date(date),
-                    text: message.message
-                });
-            }
+            var date = typeof (message.time) === 'string' ? parseInt(message.time)
+                : message.time;
+            $scope.model.messages.push({
+                author: message.author,
+                date: new Date(date),
+                text: message.message
+            });
         }
 
         function onClose() {
-            $scope.model.connected = false;
             $scope.model.content = 'Server closed the connection after a timeout';
         }
 
         function onError() {
             $scope.model.content = "Sorry, but there's some problem with your socket or the server is down";
-            $scope.model.logged = false;
         }
 
         function onReconnect(request) {
             $scope.model.content = 'Connection lost. Trying to reconnect ' + request.reconnectInterval;
-            $scope.model.connected = false;
         }
 
         var input = $('#input');
