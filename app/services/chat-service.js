@@ -11,7 +11,7 @@ angular.module('chatApp.chat.service', [])
         'ON_ERROR': 'ON_ERROR',
         'ON_RECONNECT': 'ON_RECONNECT'
     })
-    .service('ChatService', ['BACKEND_URL', 'AtmosphereService', 'EventService', 'CHAT_EVENTS', function (backendUrl, atmosphereService, eventService, events) {
+    .factory('ChatService', ['BACKEND_URL', 'AtmosphereService', 'EventService', 'CHAT_EVENTS', function (backendUrl, atmosphereService, eventService, events) {
         var socket;
 
         var url = backendUrl.replace(/http\:|https\:/, "ws:");

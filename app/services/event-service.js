@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('chatApp.event.service', [])
-    .service('EventService', [function () {
+    .factory('EventService', [function () {
         return {
             fire: function (topic, data, channel) {
                 if (!topic) {
