@@ -16,6 +16,7 @@
     "bootstrap": "^3.3.7",
     "lodash": "^4.14.1",
     "postal.js": "^2.0.4",
-    "angular-block-ui": "^0.2.2"
+    "angular-block-ui": "^0.2.2",
+    "angular-cookies": "^1.5.8"
   }
 }

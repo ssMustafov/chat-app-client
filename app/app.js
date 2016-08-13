@@ -2,9 +2,8 @@
 
 angular.module('chatApp', [
     'ngRoute',
+    'ngCookies',
     'chatApp.chat.room',
-    'chatApp.view2',
-    'chatApp.version',
     'chatApp.constants',
     'chatApp.atmosphere.service',
     'chatApp.chat.service',
@@ -15,6 +14,7 @@ angular.module('chatApp', [
 
     $routeProvider.otherwise({redirectTo: '/chat/room/1'});
 }])
+.constant('jQuery', $)
 .run(['EventService', 'blockUI', 'CHAT_EVENTS', function (eventService, blockUi, chatEvents) {
     eventService.subscribe(chatEvents.ON_OPEN, function () {
         blockUi.stop();
