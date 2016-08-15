@@ -18,12 +18,13 @@
     <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/main.css">
     <link rel="stylesheet" href="css/bootstrap.min.css"/>
     <link rel="stylesheet" href="bower_components/angular-block-ui/dist/angular-block-ui.min.css"/>
+    <link rel="stylesheet" href="bower_components/angular-ui-notification/dist/angular-ui-notification.min.css"/>
     <link rel="stylesheet" href="app.css">
     <script src="bower_components/html5-boilerplate/dist/js/vendor/modernizr-2.8.3.min.js"></script>
     <script src="bower_components/atmosphere.js/atmosphere.min.js"></script>
 </head>
 <body class="">
-<div class="navbar navbar-default navbar-fixed-top">
+<div ng-controller="MainController" class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <div class="navbar-header">
             <a href="#!/" class="navbar-brand">Chat app</a>
@@ -33,7 +34,7 @@
                 <span class="icon-bar"></span>
             </button>
         </div>
-        <div class="navbar-collapse collapse" id="navbar-main">
+        <div ng-if="isAuthenticated" class="navbar-collapse collapse" id="navbar-main">
             <ul class="nav navbar-nav">
                 <li>
                     <a href="#!/">Home</a>
@@ -42,12 +43,12 @@
 
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" id="user-options">Admin<span
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" id="user-options">{{currentUser.username}}<span
                             class="caret"></span></a>
                     <ul class="dropdown-menu" aria-labelledby="user-options">
                         <li><a href="javascript:void(0);">Settings</a></li>
                         <li class="divider"></li>
-                        <li><a href="javascript:void(0);">Logout</a></li>
+                        <li><a href="javascript:void(0);" ng-click="logout()">Logout</a></li>
                     </ul>
                 </li>
             </ul>
@@ -69,15 +70,20 @@
 <script src="bower_components/angular-route/angular-route.js"></script>
 <script src="bower_components/angular-block-ui/dist/angular-block-ui.min.js"></script>
 <script src="bower_components/angular-cookies/angular-cookies.min.js"></script>
+<script src="bower_components/angular-ui-notification/dist/angular-ui-notification.min.js"></script>
 
 <script src="services/atmosphere-service.js"></script>
 <script src="services/chat-service.js"></script>
 <script src="services/event-service.js"></script>
+<script src="services/authentication-service.js"></script>
+<script src="services/identity-service.js"></script>
 
 <script src="ngConstants.js"></script>
 <script src="app.js"></script>
 <script src="chat-room/chat-room.js"></script>
-
+<script src="account/login/login.js"></script>
+<script src="account/register/register.js"></script>
+<script src="common/main.js"></script>
 
 </body>
 </html>

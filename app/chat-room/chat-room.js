@@ -5,14 +5,21 @@ angular.module('chatApp.chat.room', ['ngRoute'])
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/chat/room/:id', {
             templateUrl: 'chat-room/chat-room.html',
-            controller: 'ChatRoomCtrl'
+            controller: 'ChatRoomCtrl',
+            data: {
+                requireAuthentication: true
+            }
         });
     }])
-    .controller('ChatRoomCtrl', ['$scope', '$routeParams', 'ChatService', 'EventService', 'CHAT_EVENTS', function ($scope, $routeParams, chatService, eventService, chatEvents) {
+    .controller('ChatRoomCtrl', ['$scope', '$routeParams', 'ChatService', 'EventService', 'CHAT_EVENTS', 'IdentityService',
+            function ($scope, $routeParams, chatService, eventService, chatEvents, identityService) {
         $scope.model = {
             transport: 'websocket',
             messages: []
         };
+        identityService.getCurrentUser().then(function (user) {
+            $scope.model.name = user.username;
+        });
 
         function onOpen(response) {
             $scope.model.transport = response.transport;
@@ -61,10 +68,6 @@ angular.module('chatApp.chat.room', ['ngRoute'])
             var msg = $(me).val();
             if (msg && msg.length > 0 && event.keyCode === 13) {
                 $scope.$apply(function () {
-                    // First message is always the author's name
-                    if (!$scope.model.name)
-                        $scope.model.name = msg;
-
                     chatService.sendMessage({
                         author: $scope.model.name,
                         message: msg
