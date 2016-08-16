@@ -30,11 +30,20 @@ angular.module('chatApp', [
         positionY: 'top'
     });
 
-    $httpProvider.interceptors.push(['$q', function($q) {
+    $httpProvider.interceptors.push(['$q', '$injector', '$location', function($q, $injector, $location) {
         return {
             'responseError': function(rejection) {
-                console.log(rejection);
+                if (rejection.status === 401) {
+                    $location.path('/account/login');
+                }
 
+                var Notification = $injector.get('Notification');
+                if (rejection.data && rejection.data['message']) {
+                    Notification.error({
+                        title: 'Error',
+                        message: rejection.data['message']
+                    });
+                }
 
                 return $q.reject(rejection);
             }
@@ -52,7 +61,6 @@ angular.module('chatApp', [
                     $location.path('/account/login');
                 }
             }
-
         });
 
         authenticationService.refreshCookie();
