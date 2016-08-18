@@ -11,7 +11,8 @@ angular.module('chatApp.chat.service', [])
         'ON_ERROR': 'ON_ERROR',
         'ON_RECONNECT': 'ON_RECONNECT'
     })
-    .factory('ChatService', ['BACKEND_URL', 'AtmosphereService', 'EventService', 'CHAT_EVENTS', function (backendUrl, atmosphereService, eventService, events) {
+    .factory('ChatService', ['BACKEND_URL', 'AtmosphereService', 'EventService', 'CHAT_EVENTS', 'AUTH_EVENTS',
+            function (backendUrl, atmosphereService, eventService, CHAT_EVENTS, AUTH_EVENTS) {
         var socket;
 
         var url = backendUrl.replace(/http\:|https\:/, "ws:");
@@ -31,7 +32,7 @@ angular.module('chatApp.chat.service', [])
         };
 
         request.onOpen = function (response) {
-            eventService.fire(events.ON_OPEN, {
+            eventService.fire(CHAT_EVENTS.ON_OPEN, {
                 transport: response.transport
             });
         };
@@ -54,13 +55,13 @@ angular.module('chatApp.chat.service', [])
                 socket = atmosphereService.subscribe(request);
             }, request.reconnectInterval);
 
-            eventService.fire(events.ON_CLIENT_TIMEOUT, {
+            eventService.fire(CHAT_EVENTS.ON_CLIENT_TIMEOUT, {
                 reconnectInterval: request.reconnectInterval
             });
         };
 
         request.onReopen = function (response) {
-            eventService.fire(events.ON_REOPEN, {
+            eventService.fire(CHAT_EVENTS.ON_REOPEN, {
                 transport: response.transport
             });
         };
@@ -68,7 +69,7 @@ angular.module('chatApp.chat.service', [])
         request.onTransportFailure = function (errorMsg) {
             atmosphere.util.info(errorMsg);
 
-            eventService.fire(events.ON_TRANSPORT_FAILURE, {
+            eventService.fire(CHAT_EVENTS.ON_TRANSPORT_FAILURE, {
                 fallbackTransport: request.fallbackTransport
             });
         };
@@ -77,7 +78,7 @@ angular.module('chatApp.chat.service', [])
             var responseText = response.responseBody;
             try {
                 var message = atmosphere.util.parseJSON(responseText);
-                eventService.fire(events.ON_MESSAGE, {
+                eventService.fire(CHAT_EVENTS.ON_MESSAGE, {
                     author: message.author,
                     time: message.time,
                     message: message.message
@@ -89,16 +90,27 @@ angular.module('chatApp.chat.service', [])
         };
 
         request.onError = function (response) {
-            eventService.fire(events.ON_ERROR);
+            eventService.fire(CHAT_EVENTS.ON_ERROR);
         };
 
         request.onReconnect = function (request, response) {
-            eventService.fire(events.ON_RECONNECT, {
+            eventService.fire(CHAT_EVENTS.ON_RECONNECT, {
                 reconnectInterval: request.reconnectInterval
             });
         };
 
+        function onLogout() {
+            atmosphereService.unsubscribe();
+        }
+
+        function onLogin() {
+            socket = atmosphereService.subscribe(request);
+        }
+
         socket = atmosphereService.subscribe(request);
+
+        eventService.subscribe(AUTH_EVENTS.LOGGED_IN, onLogin);
+        eventService.subscribe(AUTH_EVENTS.LOGGED_OUT, onLogout);
 
         return {
             sendMessage: function (message) {

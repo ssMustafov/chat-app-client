@@ -3,17 +3,20 @@
 angular.module('chatApp.main.common', [])
     .controller('MainController', [
         '$scope',
-        'IdentityService', 'AuthenticationService',
-        function ($scope, identityService, authenticationService) {
-            identityService.getCurrentUser()
-                .then(function (user) {
-                    $scope.currentUser = user;
-                    $scope.isAuthenticated = true;
-                });
-
+        'IdentityService', 'AuthenticationService', 'AUTH_EVENTS', 'EventService',
+        function ($scope, identityService, authenticationService, AUTH_EVENTS, eventService) {
             $scope.logout = function () {
                 authenticationService.logout();
                 $scope.currentUser = undefined;
                 $scope.isAuthenticated = false;
+            };
+
+            function onLogin() {
+                identityService.getCurrentUser().then(function (user) {
+                    $scope.currentUser = user;
+                    $scope.isAuthenticated = true;
+                });
             }
+
+            eventService.subscribe(AUTH_EVENTS.LOGGED_IN, onLogin);
         }]);
