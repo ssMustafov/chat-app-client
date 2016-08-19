@@ -28,7 +28,8 @@ angular.module('chatApp.chat.service', [])
             maxReconnectOnClose: 500,
             reconnectOnServerError: true,
             enableXDR: true,
-            timeout: 0
+            timeout: 0,
+            shared: true
         };
 
         request.onOpen = function (response) {

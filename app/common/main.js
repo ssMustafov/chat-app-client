@@ -18,5 +18,7 @@ angular.module('chatApp.main.common', [])
                 });
             }
 
+            onLogin();
+
             eventService.subscribe(AUTH_EVENTS.LOGGED_IN, onLogin);
         }]);
