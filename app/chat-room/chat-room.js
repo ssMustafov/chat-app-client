@@ -13,10 +13,14 @@ angular.module('chatApp.chat.room', ['ngRoute'])
     }])
     .controller('ChatRoomCtrl', ['$scope', '$routeParams', 'ChatService', 'EventService', 'CHAT_EVENTS', 'IdentityService',
             function ($scope, $routeParams, chatService, eventService, chatEvents, identityService) {
+        var roomId = $routeParams.id;
+        chatService.subscribe(roomId);
+
         $scope.model = {
             transport: 'websocket',
             messages: []
         };
+
         identityService.getCurrentUser().then(function (user) {
             $scope.model.name = user.username;
         });
