@@ -4,8 +4,29 @@ body {
   margin-top: 60px;
 }
 
-.border {
-  border: 1px solid black;
+.room-list-item:hover {
+  cursor: pointer;
+}
+
+.current-user-bg {
+  background: #f5f5f5;
+}
+
+.chat-message {
+  padding: 5px;
+  border: 1px solid #ccc;
+}
+
+.chat-room-heading {
+  background-color: #fff !important;
+}
+
+.chat-room-panel {
+  padding: 1px;
+}
+
+.chat-room-panel .media {
+  margin-top: 1px;
 }
 
 .menu {

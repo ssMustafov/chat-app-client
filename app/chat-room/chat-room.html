@@ -1,29 +1,47 @@
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Chat room</h3>
+            <div class="chat-room-heading panel-heading">
+                <div class="media">
+                    <div class="media-left media-top">
+                        <a href="javascript:void(0);">
+                            <img class="media-object" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+PCEtLQpTb3VyY2UgVVJMOiBob2xkZXIuanMvNjR4NjQKQ3JlYXRlZCB3aXRoIEhvbGRlci5qcyAyLjYuMC4KTGVhcm4gbW9yZSBhdCBodHRwOi8vaG9sZGVyanMuY29tCihjKSAyMDEyLTIwMTUgSXZhbiBNYWxvcGluc2t5IC0gaHR0cDovL2ltc2t5LmNvCi0tPjxkZWZzPjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+PCFbQ0RBVEFbI2hvbGRlcl8xNTZhZWE4OWY2NCB0ZXh0IHsgZmlsbDojQUFBQUFBO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1mYW1pbHk6QXJpYWwsIEhlbHZldGljYSwgT3BlbiBTYW5zLCBzYW5zLXNlcmlmLCBtb25vc3BhY2U7Zm9udC1zaXplOjEwcHQgfSBdXT48L3N0eWxlPjwvZGVmcz48ZyBpZD0iaG9sZGVyXzE1NmFlYTg5ZjY0Ij48cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIGZpbGw9IiNFRUVFRUUiLz48Zz48dGV4dCB4PSIxNC41IiB5PSIzNi41Ij42NHg2NDwvdGV4dD48L2c+PC9nPjwvc3ZnPg==" alt="avatar">
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <h1 class="panel-title">{{roomName}}</h1>
+                        <small>{{roomDescription}}</small>
+                    </div>
+                </div>
             </div>
-            <div class="panel-body">
-                <div class="messages">
-                    <p data-ng-repeat="message in model.messages">
-                        <span class="time">{{message.date | date:'shortDate'}} {{message.date|date:'shortTime'}}</span>
-                        <span class="author">{{message.author}}</span> :
+            <div class="panel-body chat-room-panel">
+                <div class="chat-message messages media" data-ng-repeat="message in model.messages" ng-class="{'current-user-bg': isCurrentUser(message.author.id)}">
+                    <div class="media-left media-top">
+                        <a href="javascript:void(0);">
+                            <img class="media-object" width="32" height="32" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+PCEtLQpTb3VyY2UgVVJMOiBob2xkZXIuanMvNjR4NjQKQ3JlYXRlZCB3aXRoIEhvbGRlci5qcyAyLjYuMC4KTGVhcm4gbW9yZSBhdCBodHRwOi8vaG9sZGVyanMuY29tCihjKSAyMDEyLTIwMTUgSXZhbiBNYWxvcGluc2t5IC0gaHR0cDovL2ltc2t5LmNvCi0tPjxkZWZzPjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+PCFbQ0RBVEFbI2hvbGRlcl8xNTZhZWE4OWY2NCB0ZXh0IHsgZmlsbDojQUFBQUFBO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1mYW1pbHk6QXJpYWwsIEhlbHZldGljYSwgT3BlbiBTYW5zLCBzYW5zLXNlcmlmLCBtb25vc3BhY2U7Zm9udC1zaXplOjEwcHQgfSBdXT48L3N0eWxlPjwvZGVmcz48ZyBpZD0iaG9sZGVyXzE1NmFlYTg5ZjY0Ij48cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIGZpbGw9IiNFRUVFRUUiLz48Zz48dGV4dCB4PSIxNC41IiB5PSIzNi41Ij42NHg2NDwvdGV4dD48L2c+PC9nPjwvc3ZnPg==" alt="avatar">
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <h5 class="media-heading author">{{message.author.username}} <small class="time">| {{message.date | date:'shortDate'}} {{message.date|date:'shortTime'}}</small></h5>
                         <span class="text">{{message.text}}</span>
-                    </p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <span data-ng-show="!model.name">Enter your name:</span>
-    <div data-ng-show="model.logged">
-        <span><b>{{model.name}}</b> says:</span>
-    </div>
-    <form role="form" class="form-horizontal">
-        <div class="form-group">
-            <div class="col-lg-9">
-                <input type="text" class="form-control" id="input" x-webkit-speech />
+    <div class="row">
+        <form role="form" class="form-horizontal">
+            <div class="input-group">
+                <input type="text" placeholder="Type a message..." class="form-control" id="input" autocomplete="off" x-webkit-speech />
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" title="Send emoticons">
+                        <span class="glyphicon glyphicon-eye-open"></span>
+                    </button>
+                    <button class="btn btn-default" type="button" title="Send files">
+                        <span class="glyphicon glyphicon-paperclip"></span>
+                    </button>
+                </span>
             </div>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>

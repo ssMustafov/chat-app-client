@@ -12,7 +12,8 @@ angular.module('chatApp.chat.room', ['ngRoute'])
         });
     }])
     .controller('ChatRoomCtrl', ['$scope', '$routeParams', 'ChatService', 'EventService', 'CHAT_EVENTS', 'IdentityService',
-            function ($scope, $routeParams, chatService, eventService, chatEvents, identityService) {
+            'RoomService',
+            function ($scope, $routeParams, chatService, eventService, chatEvents, identityService, roomService) {
         var roomId = $routeParams.id;
         chatService.subscribe(roomId);
 
@@ -22,7 +23,13 @@ angular.module('chatApp.chat.room', ['ngRoute'])
         };
 
         identityService.getCurrentUser().then(function (user) {
-            $scope.model.name = user.username;
+            $scope.model.user = user;
+        });
+
+        roomService.getRoomById(roomId).then(function (room) {
+            $scope.roomName = room['name'];
+            $scope.roomDescription = room['description'];
+            $scope.roomUsers = room['users'];
         });
 
         function onOpen(response) {
@@ -45,12 +52,12 @@ angular.module('chatApp.chat.room', ['ngRoute'])
         }
 
         function onMessage(message) {
-            var date = typeof (message.time) === 'string' ? parseInt(message.time)
-                : message.time;
+            var date = typeof (message.receivedDate) === 'string' ? parseInt(message.receivedDate)
+                : message.receivedDate;
             $scope.model.messages.push({
-                author: message.author,
+                author: message.user,
                 date: new Date(date),
-                text: message.message
+                text: message.data
             });
         }
 
@@ -66,6 +73,10 @@ angular.module('chatApp.chat.room', ['ngRoute'])
             $scope.model.content = 'Connection lost. Trying to reconnect ' + request.reconnectInterval;
         }
 
+        $scope.isCurrentUser = function (id) {
+            return $scope.model.user['id'] === id;
+        };
+
         var input = $('#input');
         input.keydown(function (event) {
             var me = this;
@@ -73,8 +84,8 @@ angular.module('chatApp.chat.room', ['ngRoute'])
             if (msg && msg.length > 0 && event.keyCode === 13) {
                 $scope.$apply(function () {
                     chatService.sendMessage({
-                        author: $scope.model.name,
-                        message: msg
+                        user: $scope.model.user,
+                        data: msg
                     });
                     $(me).val('');
                 });

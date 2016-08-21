@@ -42,19 +42,10 @@ angular.module('chatApp.chat.service', [])
             };
 
             request.onClose = function (response) {
-                socket.push(atmosphere.util.stringifyJSON({
-                    author: 'currentUser',
-                    message: 'disconnecting'
-                }));
                 eventService.fire('ON_CLOSE');
             };
 
             request.onClientTimeout = function (response) {
-                socket.push(atmosphere.util.stringifyJSON({
-                    author: 'currentUser',
-                    message: 'is inactive and closed the connection. Will reconnect in '
-                    + request.reconnectInterval
-                }));
                 setTimeout(function () {
                     socket = atmosphereService.subscribe(request);
                 }, request.reconnectInterval);
@@ -82,11 +73,15 @@ angular.module('chatApp.chat.service', [])
                 var responseText = response.responseBody;
                 try {
                     var message = atmosphere.util.parseJSON(responseText);
-                    eventService.fire(CHAT_EVENTS.ON_MESSAGE, {
-                        author: message.author,
-                        time: message.time,
-                        message: message.message
-                    });
+                    if (message.user['username']==='system') {
+                        console.log(message);
+                    } else {
+                        eventService.fire(CHAT_EVENTS.ON_MESSAGE, {
+                            user: message.user,
+                            receivedDate: message.receivedDate,
+                            data: message.data
+                        });
+                    }
                 } catch (e) {
                     console.error("Error parsing JSON: ", responseText);
                     throw e;
@@ -112,7 +107,6 @@ angular.module('chatApp.chat.service', [])
             socket = atmosphereService.subscribe(request);
         }
 
-        //eventService.subscribe(AUTH_EVENTS.LOGGED_IN, subscribe);
         eventService.subscribe(AUTH_EVENTS.LOGGED_OUT, unsubscribe);
 
         return {

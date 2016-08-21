@@ -17,14 +17,15 @@
     <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/normalize.css">
     <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/main.css">
     <link rel="stylesheet" href="css/bootstrap.min.css"/>
+
     <link rel="stylesheet" href="bower_components/angular-block-ui/dist/angular-block-ui.min.css"/>
     <link rel="stylesheet" href="bower_components/angular-ui-notification/dist/angular-ui-notification.min.css"/>
     <link rel="stylesheet" href="app.css">
     <script src="bower_components/html5-boilerplate/dist/js/vendor/modernizr-2.8.3.min.js"></script>
     <script src="bower_components/atmosphere.js/atmosphere.min.js"></script>
 </head>
-<body class="">
-<div ng-controller="MainController" class="navbar navbar-default navbar-fixed-top">
+<body ng-controller="MainController">
+<div class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <div class="navbar-header">
             <a href="#!/" class="navbar-brand">Chat app</a>
@@ -37,7 +38,7 @@
         <div ng-if="isAuthenticated" class="navbar-collapse collapse" id="navbar-main">
             <ul class="nav navbar-nav">
                 <li>
-                    <a href="#!/">Home</a>
+                    <a href="javascript:void(0);" data-toggle="modal" data-target=".create-room-modal"><strong>+</strong> Create room</a>
                 </li>
             </ul>
 
@@ -58,7 +59,47 @@
 </div>
 
 <div class="container-fluid">
-    <div ng-view></div>
+    <div ng-if="isAuthenticated" class="col-md-2 rooms-list">
+        Rooms
+        <ul class="list-group">
+            <li class="list-group-item room-list-item" data-ng-repeat="room in rooms" id="room-{{room.id}}" ng-click="openRoom(room.id)"
+                ng-class="{'active': isActiveRoom(room.id)}">
+                {{room.name}}
+                <span class="badge">14</span>
+            </li>
+        </ul>
+    </div>
+
+    <div ng-class="{'col-md-10': isAuthenticated}" ng-view></div>
+</div>
+
+<div class="modal create-room-modal" tabindex="-1" role="dialog" aria-labelledby="createNewRoom">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="gridSystemModalLabel">Create room</h4>
+            </div>
+            <form name="createRoomForm" ng-submit="createRoom(createRoomForm.$valid, roomToCreate)" novalidate>
+                <div class="modal-body">
+                    <div class="form-group" ng-class="{ 'has-error' : createRoomForm.name.$invalid && !createRoomForm.name.$pristine }">
+                        <label for="name">Room name</label>
+                        <input type="text" name="name" id="name" required="required" ng-model="roomToCreate.name" ng-minlength="1" ng-maxlength="50" class="form-control"/>
+                        <p ng-show="createRoomForm.name.$error.minlength" class="help-block">Room name is too short.</p>
+                        <p ng-show="createRoomForm.name.$error.maxlength" class="help-block">Room name is too long.</p>
+                    </div>
+                    <div class="form-group" ng-class="{ 'has-error' : createRoomForm.description.$invalid && !createRoomForm.description.$pristine }">
+                        <label for="name">Room description</label>
+                        <textarea name="description" id="description" ng-model="roomToCreate.description" ng-maxlength="256" class="form-control" rows="5"></textarea>
+                        <p ng-show="createRoomForm.description.$error.maxlength" class="help-block">Room description is too long.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" ng-disabled="createRoomForm.$invalid">Create</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -77,6 +118,7 @@
 <script src="services/event-service.js"></script>
 <script src="services/authentication-service.js"></script>
 <script src="services/identity-service.js"></script>
+<script src="services/room-service.js"></script>
 
 <script src="ngConstants.js"></script>
 <script src="app.js"></script>
