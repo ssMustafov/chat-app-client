@@ -35,8 +35,7 @@
                             </div>
                             <div id="users-collapse" class="panel-collapse collapse in">
                                 <ul class="list-group">
-                                    <li class="list-group-item">admin</li>
-                                    <li class="list-group-item">sinan</li>
+                                    <li class="list-group-item" data-ng-repeat="user in roomUsers">{{user.username}}</li>
                                 </ul>
                             </div>
                         </div>
