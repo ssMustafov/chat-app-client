@@ -29,6 +29,7 @@ angular.module('chatApp.main.common', [])
             $scope.createRoom = function (isValid, room) {
                 if (isValid && room && room['name']) {
                     roomService.createRoom(room).then(function (data) {
+                        $scope.rooms.push(data);
                         $location.path('/chat/room/' + data['id']);
                         $('.create-room-modal').modal('hide');
                         notification.success({
