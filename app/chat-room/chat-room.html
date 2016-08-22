@@ -32,7 +32,7 @@
     <div class="row">
         <form role="form" class="form-horizontal">
             <div class="input-group">
-                <input type="text" placeholder="Type a message..." class="form-control" id="input" autocomplete="off" x-webkit-speech />
+                <input ng-disabled="!connected" type="text" placeholder="Type a message..." class="form-control" id="input" autocomplete="off" x-webkit-speech />
                 <span class="input-group-btn">
                     <button class="btn btn-default" type="button" title="Send emoticons">
                         <span class="glyphicon glyphicon-eye-open"></span>

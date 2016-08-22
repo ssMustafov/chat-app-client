@@ -15,7 +15,6 @@ angular.module('chatApp.chat.room', ['ngRoute'])
             'RoomService',
             function ($scope, $routeParams, chatService, eventService, chatEvents, identityService, roomService) {
         var roomId = $routeParams.id;
-        chatService.subscribe(roomId);
 
         $scope.model = {
             transport: 'websocket',
@@ -30,6 +29,8 @@ angular.module('chatApp.chat.room', ['ngRoute'])
             $scope.roomName = room['name'];
             $scope.roomDescription = room['description'];
             $scope.roomUsers = room['users'];
+            $scope.connected = true;
+            chatService.subscribe(roomId);
         });
 
         function onOpen(response) {
@@ -52,13 +53,15 @@ angular.module('chatApp.chat.room', ['ngRoute'])
         }
 
         function onMessage(message) {
-            var date = typeof (message.receivedDate) === 'string' ? parseInt(message.receivedDate)
-                : message.receivedDate;
-            $scope.model.messages.push({
-                author: message.user,
-                date: new Date(date),
-                text: message.data
-            });
+            if ($scope.connected) {
+                var date = typeof (message.receivedDate) === 'string' ? parseInt(message.receivedDate)
+                    : message.receivedDate;
+                $scope.model.messages.push({
+                    author: message.user,
+                    date: new Date(date),
+                    text: message.data
+                });
+            }
         }
 
         function onClose() {
