@@ -14,6 +14,7 @@ angular.module('chatApp', [
     'chatApp.authentication.service',
     'chatApp.identity.service',
     'chatApp.room.service',
+    'chatApp.users.service',
     'ui-notification',
     'blockUI'
 ]).config(['$locationProvider', '$routeProvider', '$httpProvider', 'NotificationProvider', function ($locationProvider, $routeProvider, $httpProvider, notificationProvider) {

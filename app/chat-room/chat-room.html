@@ -18,7 +18,9 @@
                         <div class="pull-right">
                             <div class="form-inline">
                                 <input type="text" placeholder="Search..." class="form-control" />
-                                <button class="btn btn-default"><span class="glyphicon glyphicon-cog"></span></button>
+                                <button class="btn btn-default" data-toggle="modal" data-target=".room-settings" ng-click="onSettingsDialogOpen()">
+                                    <span class="glyphicon glyphicon-cog"></span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -82,5 +84,33 @@
                 </span>
             </div>
         </form>
+    </div>
+
+    <div class="modal room-settings" tabindex="-1" role="dialog" aria-labelledby="roomSettings">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Room settings</h4>
+                </div>
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="javascript:void(0);" data-target="#users" data-toggle="tab" aria-expanded="false">Users</a></li>
+                    <li><a href="javascript:void(0);" data-target="#details" data-toggle="tab" aria-expanded="true">Details</a></li>
+                </ul>
+                <div class="modal-body">
+                    <div id="roomSettingsTabsContent" class="tab-content">
+                        <div class="tab-pane active in" id="users">
+                            <label for="users-search">Search for users to add to the room</label>
+                            <input type="text" name="users-search" id="users-search" class="form-control" autocomplete="off" />
+                        </div>
+                        <div class="tab-pane" id="details">
+                            <p>Room details</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="onSettingsDialogClose()">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

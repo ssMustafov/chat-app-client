@@ -12,8 +12,8 @@ angular.module('chatApp.chat.room', ['ngRoute'])
         });
     }])
     .controller('ChatRoomCtrl', ['$scope', '$routeParams', 'ChatService', 'EventService', 'CHAT_EVENTS', 'IdentityService',
-            'RoomService',
-            function ($scope, $routeParams, chatService, eventService, chatEvents, identityService, roomService) {
+            'RoomService', 'UsersService',
+            function ($scope, $routeParams, chatService, eventService, chatEvents, identityService, roomService, usersService) {
         var roomId = $routeParams.id;
 
         $scope.model = {
@@ -78,6 +78,16 @@ angular.module('chatApp.chat.room', ['ngRoute'])
 
         $scope.isCurrentUser = function (id) {
             return $scope.model.user['id'] === id;
+        };
+
+        $scope.onSettingsDialogOpen = function () {
+            usersService.getAllUsers().then(function (users) {
+                $scope.allUsers = users;
+            });
+        };
+
+        $scope.onSettingsDialogClose = function () {
+            $scope.allUsers = undefined;
         };
 
         var input = $('#input');
