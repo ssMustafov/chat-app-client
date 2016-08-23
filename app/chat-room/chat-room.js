@@ -12,8 +12,8 @@ angular.module('chatApp.chat.room', ['ngRoute'])
         });
     }])
     .controller('ChatRoomCtrl', ['$scope', '$routeParams', 'ChatService', 'EventService', 'CHAT_EVENTS', 'IdentityService',
-            'RoomService', 'UsersService',
-            function ($scope, $routeParams, chatService, eventService, chatEvents, identityService, roomService, usersService) {
+            'RoomService', 'UsersService', 'Notification',
+            function ($scope, $routeParams, chatService, eventService, chatEvents, identityService, roomService, usersService, notification) {
         var roomId = $routeParams.id;
 
         $scope.model = {
@@ -31,6 +31,8 @@ angular.module('chatApp.chat.room', ['ngRoute'])
             $scope.roomUsers = room['users'];
             $scope.connected = true;
             chatService.subscribe(roomId);
+
+            $scope.roomToEdit = room;
         });
 
         function onOpen(response) {
@@ -76,18 +78,66 @@ angular.module('chatApp.chat.room', ['ngRoute'])
             $scope.model.content = 'Connection lost. Trying to reconnect ' + request.reconnectInterval;
         }
 
+        function filterJoinedUsers(arr1, arr2) {
+            var difference = _.differenceWith(arr1, arr2, function (a, b) {
+                return a.id === b.id;
+            });
+            return difference;
+        }
+
+        function removeUserById(arr, id, inverse) {
+            var result = _.remove(arr, function (element) {
+                if (inverse) {
+                    return element.id != id;
+                }
+                return element.id === id;
+            });
+            return result;
+        }
+
         $scope.isCurrentUser = function (id) {
             return $scope.model.user['id'] === id;
         };
 
         $scope.onSettingsDialogOpen = function () {
             usersService.getAllUsers().then(function (users) {
-                $scope.allUsers = users;
+                $scope.allUsers = filterJoinedUsers(users, $scope.roomUsers);
             });
         };
 
         $scope.onSettingsDialogClose = function () {
             $scope.allUsers = undefined;
+        };
+
+        $scope.addUserToRoom = function (user) {
+            roomService.addUserToRoom(roomId, user.id).then(function () {
+                $scope.roomUsers.push(user);
+                if ($scope.allUsers) {
+                    $scope.allUsers = removeUserById($scope.allUsers, user.id);
+                }
+                $scope.selectedUser = undefined;
+            });
+        };
+
+        $scope.removeUserFromRoom = function (user) {
+            roomService.removeUserFromRoom(roomId, user.id).then(function () {
+                $scope.roomUsers = removeUserById($scope.roomUsers, user.id, true);
+            });
+        };
+
+        $scope.updateRoom = function (isValid, room) {
+            if (isValid && room['name']) {
+                roomService.updateRoom(room).then(function (data) {
+                    $scope.roomName = data['name'];
+                    $scope.roomDescription = data['description'];
+                    $('.room-settings').modal('hide');
+                    notification.success({
+                        title: 'Success',
+                        message: 'Room update successfully'
+                    });
+                    room = {};
+                });
+            }
         };
 
         var input = $('#input');

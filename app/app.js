@@ -16,7 +16,8 @@ angular.module('chatApp', [
     'chatApp.room.service',
     'chatApp.users.service',
     'ui-notification',
-    'blockUI'
+    'blockUI',
+    'ui.bootstrap'
 ]).config(['$locationProvider', '$routeProvider', '$httpProvider', 'NotificationProvider', function ($locationProvider, $routeProvider, $httpProvider, notificationProvider) {
     $locationProvider.hashPrefix('!');
 

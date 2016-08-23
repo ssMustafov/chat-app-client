@@ -37,7 +37,13 @@
                             </div>
                             <div id="users-collapse" class="panel-collapse collapse in">
                                 <ul class="list-group">
-                                    <li class="list-group-item" data-ng-repeat="user in roomUsers">{{user.username}}</li>
+                                    <li class="list-group-item" data-ng-repeat="user in roomUsers">
+                                        <span class="glyphicon glyphicon-user"></span>
+                                        <span class="">{{user.name || user.username}}</span>
+                                        <div class="pull-right room-users-actions">
+                                            <a class="label label-info" title="Remove user from the room" ng-click="removeUserFromRoom(user)">X</a>
+                                        </div>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -63,7 +69,7 @@
                         </a>
                     </div>
                     <div class="media-body">
-                        <h5 class="media-heading author">{{message.author.username}} <small class="time">| {{message.date | date:'shortDate'}} {{message.date|date:'shortTime'}}</small></h5>
+                        <h5 class="media-heading author">{{message.author.name || message.author.username}} <small class="time">| {{message.date | date:'shortDate'}} {{message.date|date:'shortTime'}}</small></h5>
                         <span class="text">{{message.text}}</span>
                     </div>
                 </div>
@@ -99,11 +105,29 @@
                 <div class="modal-body">
                     <div id="roomSettingsTabsContent" class="tab-content">
                         <div class="tab-pane active in" id="users">
-                            <label for="users-search">Search for users to add to the room</label>
-                            <input type="text" name="users-search" id="users-search" class="form-control" autocomplete="off" />
+                            <div class="form-group">
+                                <label for="users">Add users to the room</label>
+                                <input type="text" name="users" ng-model="selectedUser" typeahead-editable="false"
+                                       uib-typeahead="user.name || user.username for user in allUsers | filter:$viewValue | limitTo:10"
+                                       typeahead-template-url="users-autocomplete-tpl.html" typeahead-on-select="addUserToRoom($item)" class="form-control" />
+                            </div>
                         </div>
                         <div class="tab-pane" id="details">
-                            <p>Room details</p>
+                            <form name="editRoomForm" ng-submit="updateRoom(editRoomForm.$valid, roomToEdit)" novalidate>
+                                <div class="form-group" ng-class="{ 'has-error' : editRoomForm.name.$invalid && !editRoomForm.name.$pristine }">
+                                    <label for="name">Room name</label>
+                                    <input type="text" name="name" id="name" required="required" ng-model="roomToEdit.name" ng-minlength="1" ng-maxlength="50" class="form-control"/>
+                                    <p ng-show="editRoomForm.name.$error.minlength" class="help-block">Room name is too short.</p>
+                                    <p ng-show="editRoomForm.name.$error.maxlength" class="help-block">Room name is too long.</p>
+                                </div>
+                                <div class="form-group" ng-class="{ 'has-error' : editRoomForm.description.$invalid && !editRoomForm.description.$pristine }">
+                                    <label for="description">Room description</label>
+                                    <textarea name="description" id="description" ng-model="roomToEdit.description" ng-maxlength="256" class="form-control" rows="5"></textarea>
+                                    <p ng-show="editRoomForm.description.$error.maxlength" class="help-block">Room description is too long.</p>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary" ng-disabled="editRoomForm.$invalid">Save</button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -113,4 +137,11 @@
             </div>
         </div>
     </div>
+
+    <script type="text/ng-template" id="users-autocomplete-tpl.html">
+        <a href="javascript:void(0);">
+            <span class="glyphicon glyphicon-user"></span>
+            <span ng-bind-html="match.label | uibTypeaheadHighlight:query"></span>
+        </a>
+    </script>
 </div>
