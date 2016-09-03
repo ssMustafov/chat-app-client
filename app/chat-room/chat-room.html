@@ -17,7 +17,7 @@
                     <div class="col-md-4">
                         <div class="pull-right">
                             <div class="form-inline">
-                                <input type="text" placeholder="Search..." class="form-control" />
+                                <input type="text" placeholder="{{::'room.messages.search' | translate}}" class="form-control" />
                                 <button class="btn btn-default" data-toggle="modal" data-target=".room-settings" ng-click="onSettingsDialogOpen()">
                                     <span class="glyphicon glyphicon-cog"></span>
                                 </button>
@@ -32,7 +32,9 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-target="#users-collapse" aria-expanded="false" aria-controls="users-collapse" href="javascript:void(0);">Users</a>
+                                    <a data-toggle="collapse" data-target="#users-collapse" aria-expanded="false" aria-controls="users-collapse" href="javascript:void(0);">
+                                        {{::'room.users.header' | translate}}
+                                    </a>
                                 </h4>
                             </div>
                             <div id="users-collapse" class="panel-collapse collapse in">
@@ -50,7 +52,9 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-target="#files-collapse" aria-expanded="false" aria-controls="files-collapse" href="javascript:void(0);">Files</a>
+                                    <a data-toggle="collapse" data-target="#files-collapse" aria-expanded="false" aria-controls="files-collapse" href="javascript:void(0);">
+                                        {{::'room.files.header' | translate}}
+                                    </a>
                                 </h4>
                             </div>
                             <div id="files-collapse" class="panel-collapse collapse">
@@ -79,7 +83,7 @@
     <div class="row">
         <form role="form" class="form-horizontal">
             <div class="input-group">
-                <input ng-disabled="!connected" type="text" placeholder="Type a message..." class="form-control" id="input" autocomplete="off" x-webkit-speech />
+                <input ng-disabled="!connected" type="text" placeholder="{{::'room.message.send.text' | translate}}" class="form-control" id="input" autocomplete="off" x-webkit-speech />
                 <span class="input-group-btn">
                     <button class="btn btn-default" type="button" title="Send emoticons">
                         <span class="glyphicon glyphicon-eye-open"></span>
@@ -96,17 +100,25 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Room settings</h4>
+                    <h4 class="modal-title">{{::'room.settings.header' | translate}}: {{roomName}}</h4>
                 </div>
                 <ul class="nav nav-tabs">
-                    <li class="active"><a href="javascript:void(0);" data-target="#users" data-toggle="tab" aria-expanded="false">Users</a></li>
-                    <li><a href="javascript:void(0);" data-target="#details" data-toggle="tab" aria-expanded="true">Details</a></li>
+                    <li class="active">
+                        <a href="javascript:void(0);" data-target="#users" data-toggle="tab" aria-expanded="false">
+                            {{::'room.settings.tabs.users' | translate}}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" data-target="#details" data-toggle="tab" aria-expanded="true">
+                            {{::'room.settings.tabs.details' | translate}}
+                        </a>
+                    </li>
                 </ul>
                 <div class="modal-body">
                     <div id="roomSettingsTabsContent" class="tab-content">
                         <div class="tab-pane active in" id="users">
                             <div class="form-group">
-                                <label for="users">Add users to the room</label>
+                                <label for="users">{{::'room.settings.users.add' | translate}}</label>
                                 <input type="text" name="users" ng-model="selectedUser" typeahead-editable="false"
                                        uib-typeahead="user.name || user.username for user in allUsers | filter:$viewValue | limitTo:10"
                                        typeahead-template-url="users-autocomplete-tpl.html" typeahead-on-select="addUserToRoom($item)" class="form-control" />
@@ -115,24 +127,24 @@
                         <div class="tab-pane" id="details">
                             <form name="editRoomForm" ng-submit="updateRoom(editRoomForm.$valid, roomToEdit)" novalidate>
                                 <div class="form-group" ng-class="{ 'has-error' : editRoomForm.name.$invalid && !editRoomForm.name.$pristine }">
-                                    <label for="name">Room name</label>
+                                    <label for="name">{{::'room.create.name' | translate}}</label>
                                     <input type="text" name="name" id="name" required="required" ng-model="roomToEdit.name" ng-minlength="1" ng-maxlength="50" class="form-control"/>
-                                    <p ng-show="editRoomForm.name.$error.minlength" class="help-block">Room name is too short.</p>
-                                    <p ng-show="editRoomForm.name.$error.maxlength" class="help-block">Room name is too long.</p>
+                                    <p ng-show="editRoomForm.name.$error.minlength" class="help-block">{{::'room.create.name.short' | translate}}</p>
+                                    <p ng-show="editRoomForm.name.$error.maxlength" class="help-block">{{::'room.create.name.long' | translate}}</p>
                                 </div>
                                 <div class="form-group" ng-class="{ 'has-error' : editRoomForm.description.$invalid && !editRoomForm.description.$pristine }">
-                                    <label for="description">Room description</label>
+                                    <label for="description">{{::'room.create.description' | translate}}</label>
                                     <textarea name="description" id="description" ng-model="roomToEdit.description" ng-maxlength="256" class="form-control" rows="5"></textarea>
-                                    <p ng-show="editRoomForm.description.$error.maxlength" class="help-block">Room description is too long.</p>
+                                    <p ng-show="editRoomForm.description.$error.maxlength" class="help-block">{{::'room.create.description.long' | translate}}.</p>
                                 </div>
 
-                                <button type="submit" class="btn btn-primary" ng-disabled="editRoomForm.$invalid">Save</button>
+                                <button type="submit" class="btn btn-primary" ng-disabled="editRoomForm.$invalid">{{::'room.settings.details.save' | translate}}</button>
                             </form>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="onSettingsDialogClose()">Close</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="onSettingsDialogClose()">{{::'room.settings.btn.close' | translate}}</button>
                 </div>
             </div>
         </div>

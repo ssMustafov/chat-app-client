@@ -11,7 +11,16 @@ angular.module('chatApp.users.service', [])
             return deferred.promise;
         }
 
+        function updateUser(user) {
+            var deferred = $q.defer();
+            $http.post(BACKEND_API_URL + '/users/' + user.id, user).then(function (response) {
+                deferred.resolve(response.data);
+            });
+            return deferred.promise;
+        }
+
         return {
-            getAllUsers: getAllUsers
+            getAllUsers: getAllUsers,
+            updateUser: updateUser
         }
     }]);

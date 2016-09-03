@@ -61,6 +61,17 @@ angular.module('chatApp.authentication.service', [])
                 eventService.fire(AUTH_EVENTS.LOGGED_OUT);
             }
 
+            function changePassword(payload) {
+                var deferred = $q.defer();
+
+                $http.post(BACKEND_API_URL + '/auth/change-password', payload)
+                    .then(function (response) {
+                        deferred.resolve(response.data);
+                    });
+
+                return deferred.promise;
+            }
+
             function refreshCookie() {
                 if (isAuthenticated()) {
                     $http.defaults.headers.common.Authorization = 'Bearer ' + $cookies.get(AUTHENTICATION_COOKIE_KEY);
@@ -73,6 +84,7 @@ angular.module('chatApp.authentication.service', [])
                 loginUser: loginUser,
                 isAuthenticated: isAuthenticated,
                 refreshCookie: refreshCookie,
-                logout: logout
+                logout: logout,
+                changePassword: changePassword
             }
         }]);

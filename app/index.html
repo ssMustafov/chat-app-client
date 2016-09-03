@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/normalize.css">
     <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/main.css">
     <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="bower_components/bootstrap-select/dist/css/bootstrap-select.min.css"/>
 
     <link rel="stylesheet" href="bower_components/angular-block-ui/dist/angular-block-ui.min.css"/>
     <link rel="stylesheet" href="bower_components/angular-ui-notification/dist/angular-ui-notification.min.css"/>
@@ -38,7 +39,7 @@
         <div ng-if="isAuthenticated" class="navbar-collapse collapse" id="navbar-main">
             <ul class="nav navbar-nav">
                 <li>
-                    <a href="javascript:void(0);" data-toggle="modal" data-target=".create-room-modal"><strong>+</strong> Create room</a>
+                    <a href="javascript:void(0);" data-toggle="modal" data-target=".create-room-modal"><strong>+</strong> {{::'room.create' | translate}}</a>
                 </li>
             </ul>
 
@@ -49,9 +50,9 @@
                         {{currentUser.name || currentUser.username}}
                         <span class="caret"></span></a>
                     <ul class="dropdown-menu" aria-labelledby="user-options">
-                        <li><a href="javascript:void(0);">Settings</a></li>
+                        <li><a href="javascript:void(0);" data-toggle="modal" data-target=".user-settings-modal">{{::'main.menu.user.settings' | translate}}</a></li>
                         <li class="divider"></li>
-                        <li><a href="javascript:void(0);" ng-click="logout()">Logout</a></li>
+                        <li><a href="javascript:void(0);" ng-click="logout()">{{::'main.menu.user.logout' | translate}}</a></li>
                     </ul>
                 </li>
             </ul>
@@ -62,7 +63,7 @@
 
 <div class="container-fluid">
     <div ng-if="isAuthenticated" class="col-md-2 rooms-list">
-        Rooms
+        {{'room.list.header' | translate}}
         <ul class="list-group">
             <li class="list-group-item room-list-item" data-ng-repeat="room in rooms" id="room-{{room.id}}" ng-click="openRoom(room.id)"
                 ng-class="{'active': isActiveRoom(room.id)}">
@@ -79,27 +80,109 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="gridSystemModalLabel">Create room</h4>
+                <h4 class="modal-title" id="gridSystemModalLabel">{{::'room.create.header' | translate}}</h4>
             </div>
             <form name="createRoomForm" ng-submit="createRoom(createRoomForm.$valid, roomToCreate)" novalidate>
                 <div class="modal-body">
                     <div class="form-group" ng-class="{ 'has-error' : createRoomForm.name.$invalid && !createRoomForm.name.$pristine }">
-                        <label for="name">Room name</label>
+                        <label for="name">{{::'room.create.name' | translate}}</label>
                         <input type="text" name="name" id="name" required="required" ng-model="roomToCreate.name" ng-minlength="1" ng-maxlength="50" class="form-control"/>
-                        <p ng-show="createRoomForm.name.$error.minlength" class="help-block">Room name is too short.</p>
-                        <p ng-show="createRoomForm.name.$error.maxlength" class="help-block">Room name is too long.</p>
+                        <p ng-show="createRoomForm.name.$error.minlength" class="help-block">{{::'room.create.name.short' | translate}}</p>
+                        <p ng-show="createRoomForm.name.$error.maxlength" class="help-block">{{::'room.create.name.long' | translate}}</p>
                     </div>
                     <div class="form-group" ng-class="{ 'has-error' : createRoomForm.description.$invalid && !createRoomForm.description.$pristine }">
-                        <label for="description">Room description</label>
+                        <label for="description">{{::'room.create.description' | translate}}</label>
                         <textarea name="description" id="description" ng-model="roomToCreate.description" ng-maxlength="256" class="form-control" rows="5"></textarea>
-                        <p ng-show="createRoomForm.description.$error.maxlength" class="help-block">Room description is too long.</p>
+                        <p ng-show="createRoomForm.description.$error.maxlength" class="help-block">{{::'room.create.description.long' | translate}}</p>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" ng-disabled="createRoomForm.$invalid">Create</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" ng-disabled="createRoomForm.$invalid">{{::'room.create.btn.save' | translate}}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{::'room.create.btn.cancel' | translate}}</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal user-settings-modal" tabindex="-1" role="dialog" aria-labelledby="userSettings">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">{{::'user.settings.header' | translate}}</h4>
+            </div>
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="javascript:void(0);" data-target="#info" data-toggle="tab" aria-expanded="false">{{::'user.settings.tabs.info' | translate}}</a></li>
+                <li><a href="javascript:void(0);" data-target="#changePassword" data-toggle="tab" aria-expanded="true">{{::'user.settings.tabs.password' | translate}}</a></li>
+                <li><a href="javascript:void(0);" data-target="#changeLang" data-toggle="tab" aria-expanded="true">{{::'user.settings.tabs.language' | translate}}</a></li>
+            </ul>
+            <div class="modal-body">
+                <div id="userSettingsTabsContent" class="tab-content">
+                    <div class="tab-pane active in" id="info">
+                        <form name="editUserForm" ng-submit="updateUser(editUserForm.$valid, userToEdit)" novalidate>
+                            <div class="form-group">
+                                <label for="username">{{::'user.settings.info.username' | translate}}</label>
+                                <input type="text" name="username" id="username" ng-model="userToEdit.username" class="form-control" disabled="disabled" />
+                            </div>
+                            <div class="form-group" ng-class="{ 'has-error' : editUserForm.email.$invalid && !editUserForm.email.$pristine }">
+                                <label for="email">{{::'user.settings.info.email' | translate}}</label>
+                                <input type="email" name="email" id="email" required="required" ng-model="userToEdit.email" class="form-control"/>
+                                <p ng-show="editUserForm.email.$invalid && !editUserForm.email.$pristine" class="help-block">{{::'user.settings.info.email.valid' | translate}}</p>
+                            </div>
+                            <div class="form-group" ng-class="{ 'has-error' : editUserForm.name.$invalid && !editUserForm.name.$pristine }">
+                                <label for="reg-name">{{::'user.settings.info.name' | translate}}</label>
+                                <input type="text" name="name" ng-maxlength="100" ng-model="userToEdit.name" id="reg-name" class="form-control" />
+                                <p ng-show="editUserForm.name.$error.maxlength" class="help-block">{{::'user.settings.info.name.long' | translate}}</p>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" ng-disabled="editUserForm.$invalid">{{::'user.settings.info.btn.save' | translate}}</button>
+                        </form>
+                    </div>
+                    <div class="tab-pane" id="changePassword">
+                        <form name="changePasswordForm" ng-submit="updatePassword(changePasswordForm.$valid, passwordForChange)" novalidate>
+                            <div class="form-group" ng-class="{ 'has-error' : changePasswordForm.currentPassword.$invalid && !changePasswordForm.currentPassword.$pristine }">
+                                <label for="currentPassword">{{::'user.settings.password.current' | translate}}</label>
+                                <input type="password" name="currentPassword" required="required" ng-minlength="6" ng-maxlength="20"
+                                       ng-model="passwordForChange.currentPassword" id="currentPassword" class="form-control" />
+                                <p ng-show="changePasswordForm.currentPassword.$error.minlength" class="help-block">{{::'user.settings.password.current.short' | translate}}</p>
+                                <p ng-show="changePasswordForm.currentPassword.$error.maxlength" class="help-block">{{::'user.settings.password.current.long' | translate}}</p>
+                            </div>
+                            <div class="form-group" ng-class="{ 'has-error' : changePasswordForm.newPassword.$invalid && !changePasswordForm.newPassword.$pristine }">
+                                <label for="newPassword">{{::'user.settings.password.new' | translate}}</label>
+                                <input type="password" name="newPassword" required="required" ng-minlength="6" ng-maxlength="20"
+                                       ng-model="passwordForChange.newPassword" id="newPassword" class="form-control" />
+                                <p ng-show="changePasswordForm.newPassword.$error.minlength" class="help-block">{{::'user.settings.password.current.short' | translate}}</p>
+                                <p ng-show="changePasswordForm.newPassword.$error.maxlength" class="help-block">{{::'user.settings.password.current.long' | translate}}</p>
+                            </div>
+                            <div class="form-group" ng-class="{ 'has-error' : passwordForChange.confirmPassword !== passwordForChange.newPassword }">
+                                <label for="confirmPassword">{{::'user.settings.password.confirmation' | translate}}</label>
+                                <input type="password" name="confirmPassword" required="required" id="confirmPassword" class="form-control"
+                                       ng-model="passwordForChange.confirmPassword"/>
+                                <p ng-show="passwordForChange.confirmPassword !== passwordForChange.newPassword" class="help-block">{{::'user.settings.password.confirmation.match' | translate}}</p>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary"
+                                    ng-disabled="changePasswordForm.$invalid || passwordForChange.confirmPassword !== passwordForChange.newPassword">
+                                {{::'user.settings.password.btn.change' | translate}}
+                            </button>
+                        </form>
+                    </div>
+                    <div class="tab-pane" id="changeLang">
+                        <div class="form-group">
+                            <label>{{::'user.settings.lang.choose' | translate}}</label>
+                            <select class="selectpicker form-control" ng-model="userLanguage">
+                                <option value="">{{::'user.settings.lang.choose.default' |  translate}}</option>
+                                <option value="en">English</option>
+                                <option value="bg">Български</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" ng-click="changeLanguage()">{{::'user.settings.lang.choose.btn.change' | translate}}</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="onSettingsDialogClose()">{{::'user.settings.btn.close' | translate}}</button>
+            </div>
         </div>
     </div>
 </div>
@@ -108,6 +191,7 @@
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="bower_components/lodash/dist/lodash.min.js"></script>
 <script src="bower_components/postal.js/lib/postal.min.js"></script>
+<script src="bower_components/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
 
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-bootstrap/ui-bootstrap.min.js"></script>
@@ -116,6 +200,10 @@
 <script src="bower_components/angular-block-ui/dist/angular-block-ui.min.js"></script>
 <script src="bower_components/angular-cookies/angular-cookies.min.js"></script>
 <script src="bower_components/angular-ui-notification/dist/angular-ui-notification.min.js"></script>
+<script src="bower_components/angular-file-upload/dist/angular-file-upload.min.js"></script>
+<script src="bower_components/angular-translate/angular-translate.min.js"></script>
+
+<script src="directives/thumbnail-directive.js"></script>
 
 <script src="services/atmosphere-service.js"></script>
 <script src="services/chat-service.js"></script>
