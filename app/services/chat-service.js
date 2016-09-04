@@ -11,8 +11,8 @@ angular.module('chatApp.chat.service', [])
         'ON_ERROR': 'ON_ERROR',
         'ON_RECONNECT': 'ON_RECONNECT'
     })
-    .factory('ChatService', ['BACKEND_URL', 'AtmosphereService', 'EventService', 'CHAT_EVENTS', 'AUTH_EVENTS',
-            function (backendUrl, atmosphereService, eventService, CHAT_EVENTS, AUTH_EVENTS) {
+    .factory('ChatService', ['$http', '$q', 'BACKEND_URL', 'BACKEND_API_URL', 'AtmosphereService', 'EventService', 'CHAT_EVENTS', 'AUTH_EVENTS',
+            function ($http, $q, backendUrl, BACKEND_API_URL, atmosphereService, eventService, CHAT_EVENTS, AUTH_EVENTS) {
         var socket;
         var request = {};
 
@@ -107,6 +107,33 @@ angular.module('chatApp.chat.service', [])
             socket = atmosphereService.subscribe(request);
         }
 
+        function getMessagesForRoom(roomId, start, rows) {
+            start = start || 0;
+            rows = rows || 10;
+            var deferred = $q.defer();
+            var path = BACKEND_API_URL + '/messages/room/' + roomId + '?start=' + start + '&rows=' + rows;
+
+            $http.get(path).then(function (response) {
+                deferred.resolve(response.data);
+            });
+
+            return deferred.promise;
+        }
+
+        function searchInRoom(roomId, term) {
+            var deferred = $q.defer();
+            var path = BACKEND_API_URL + '/messages/search/' + roomId;
+            var payload = {
+              'term': term
+            };
+
+            $http.post(path, payload).then(function (response) {
+                deferred.resolve(response.data);
+            });
+
+            return deferred.promise;
+        }
+
         eventService.subscribe(AUTH_EVENTS.LOGGED_OUT, unsubscribe);
 
         return {
@@ -119,6 +146,8 @@ angular.module('chatApp.chat.service', [])
             },
             sendMessage: function (message) {
                 socket.push(atmosphere.util.stringifyJSON(message));
-            }
+            },
+            getMessagesForRoom: getMessagesForRoom,
+            searchInRoom: searchInRoom
         }
     }]);

@@ -17,7 +17,17 @@
                     <div class="col-md-4">
                         <div class="pull-right">
                             <div class="form-inline">
-                                <input type="text" placeholder="{{::'room.messages.search' | translate}}" class="form-control" />
+                                <div class="input-group">
+                                    <input type="text" placeholder="{{::'room.messages.search' | translate}}" class="form-control" ng-model="searchTerm" />
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button" ng-click="search()">
+                                            <span class="glyphicon glyphicon-search"></span>
+                                        </button>
+                                        <button class="btn btn-default" type="button" ng-click="clearSearch()" ng-disabled="!searchTerm">
+                                            <span class="glyphicon glyphicon-remove"></span>
+                                        </button>
+                                    </span>
+                                </div>
                                 <button class="btn btn-default" data-toggle="modal" data-target=".room-settings" ng-click="onSettingsDialogOpen()">
                                     <span class="glyphicon glyphicon-cog"></span>
                                 </button>
@@ -64,6 +74,18 @@
                                 </ul>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="col-md-9 pull-left" ng-show="!hasMessages()">
+                    <h4 class="center">
+                        <div class="label label-primary">
+                            {{::'room.message.not.found' | translate}}
+                        </div>
+                    </h4>
+                </div>
+                <div class="col-md-9 pull-left center" ng-show="hasMessages()">
+                    <div class="btn btn-default btn-xs" ng-click="loadOlderMessages()">
+                        <span class="glyphicon glyphicon-menu-up"></span> {{::'room.message.load.more' | translate}}
                     </div>
                 </div>
                 <div class="col-md-9 pull-left chat-message messages media" data-ng-repeat="message in model.messages" ng-class="{'current-user-bg': isCurrentUser(message.author.id)}">

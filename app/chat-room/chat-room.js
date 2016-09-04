@@ -16,6 +16,77 @@ angular.module('chatApp.chat.room', ['ngRoute'])
             function ($scope, $routeParams, chatService, eventService, chatEvents, identityService, roomService, usersService, notification) {
         var roomId = $routeParams.id;
 
+        function parse(message) {
+            var date = typeof (message.receivedDate) === 'string' ? parseInt(message.receivedDate)
+                : message.receivedDate;
+            return {
+                author: message.user,
+                date: new Date(date),
+                text: message.data
+            };
+        }
+
+        function loadMessages() {
+            chatService.getMessagesForRoom(roomId).then(function (data) {
+                data = data.reverse();
+                data.forEach(function (message) {
+                    onMessage({
+                        receivedDate: message.sentOn,
+                        user: message.user,
+                        data: message.message
+                    })
+                });
+                incrementCount();
+            });
+        }
+
+        $scope.search = function () {
+            var term = $scope.searchTerm;
+            if (term) {
+                chatService.searchInRoom(roomId, term).then(function (data) {
+                    data = data.reverse();
+                    $scope.model.messages = [];
+                    data.forEach(function (message) {
+                        onMessage({
+                            receivedDate: message.sentOn,
+                            user: message.user,
+                            data: message.message
+                        })
+                    });
+                });
+            }
+        };
+
+        $scope.loadOlderMessages = function () {
+            chatService.getMessagesForRoom(roomId, $scope.loadCount, $scope.loadCount + 10).then(function (data) {
+                data.forEach(function (message) {
+                    var parsed = parse({
+                        receivedDate: message.sentOn,
+                        user: message.user,
+                        data: message.message
+                    });
+                    $scope.model.messages.unshift(parsed);
+                });
+
+                incrementCount();
+            });
+        };
+
+        $scope.clearSearch = function () {
+            $scope.searchTerm = undefined;
+            $scope.model.messages = [];
+            loadMessages();
+        };
+
+        $scope.hasMessages = function () {
+            return $scope.model && $scope.model.messages && $scope.model.messages.length > 0;
+        };
+
+        function incrementCount() {
+            $scope.loadCount += 10;
+        }
+
+        $scope.loadCount = 0;
         $scope.model = {
             transport: 'websocket',
             messages: []
@@ -56,13 +127,7 @@ angular.module('chatApp.chat.room', ['ngRoute'])
 
         function onMessage(message) {
             if ($scope.connected) {
-                var date = typeof (message.receivedDate) === 'string' ? parseInt(message.receivedDate)
-                    : message.receivedDate;
-                $scope.model.messages.push({
-                    author: message.user,
-                    date: new Date(date),
-                    text: message.data
-                });
+                $scope.model.messages.push(parse(message));
             }
         }
 
@@ -154,6 +219,8 @@ angular.module('chatApp.chat.room', ['ngRoute'])
                 });
             }
         });
+
+        loadMessages();
 
         eventService.subscribe(chatEvents.ON_OPEN, onOpen);
         eventService.subscribe(chatEvents.ON_CLIENT_TIMEOUT, onClientTimeout);
