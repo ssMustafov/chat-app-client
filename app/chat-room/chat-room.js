@@ -206,19 +206,6 @@ angular.module('chatApp.chat.room', ['ngRoute'])
         };
 
         var input = $('#input');
-        input.keydown(function (event) {
-            var me = this;
-            var msg = $(me).val();
-            if (msg && msg.length > 0 && event.keyCode === 13) {
-                $scope.$apply(function () {
-                    chatService.sendMessage({
-                        user: $scope.model.user,
-                        data: msg
-                    });
-                    $(me).val('');
-                });
-            }
-        });
         function onSendBtn() {
             chatService.sendMessage({
                 user: $scope.model.user,
