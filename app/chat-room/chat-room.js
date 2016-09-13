@@ -219,6 +219,14 @@ angular.module('chatApp.chat.room', ['ngRoute'])
                 });
             }
         });
+        function onSendBtn() {
+            chatService.sendMessage({
+                user: $scope.model.user,
+                data: input.val()
+            });
+            input.val('');
+        }
+        $scope.send = onSendBtn;
 
         loadMessages();
 
