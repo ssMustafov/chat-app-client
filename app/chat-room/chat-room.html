@@ -69,8 +69,13 @@
                             </div>
                             <div id="files-collapse" class="panel-collapse collapse">
                                 <ul class="list-group">
-                                    <li class="list-group-item">File 1</li>
-                                    <li class="list-group-item">File 2</li>
+                                    <li class="list-group-item" ng-show="roomFiles.length === 0">
+                                        {{::'room.files.empty' | translate}}
+                                    </li>
+                                    <li class="list-group-item" data-ng-repeat="file in roomFiles">
+                                        <a href="{{file.location}}" target="_blank">{{file.name}} | {{ file.size/1024/1024|number:2 }} MB</a>
+                                        <br/>{{::'room.files.uploaded.by' | translate}}: {{file.user.name || file.user.username}}
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -96,7 +101,7 @@
                     </div>
                     <div class="media-body">
                         <h5 class="media-heading author">{{message.author.name || message.author.username}} <small class="time">| {{message.date | date:'shortDate'}} {{message.date|date:'shortTime'}}</small></h5>
-                        <span class="text">{{message.text}}</span>
+                        <span ng-bind-html="message.text" class="text"></span>
                     </div>
                 </div>
             </div>
@@ -105,19 +110,24 @@
     <div class="row">
         <form role="form" class="form-horizontal">
             <div class="input-group">
-                <input ng-disabled="!connected" type="text" placeholder="{{::'room.message.send.text' | translate}}" class="form-control" id="input" autocomplete="off" x-webkit-speech />
+                <input ng-disabled="!connected" type="text" placeholder="{{::'room.message.send.text' | translate}}" class="form-control" id="input" autocomplete="off" />
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" title="Send emoticons">
-                        <span class="glyphicon glyphicon-eye-open"></span>
-                    </button>
-                    <button class="btn btn-default" type="button" title="Send files">
+                    <label ng-show="uploader.queue.length === 0" class="btn btn-default btn-file">
                         <span class="glyphicon glyphicon-paperclip"></span>
-                    </button>
+                        <input type="file" style="display: none;" nv-file-select="" uploader="uploader">
+                    </label>
+                    <span ng-show="uploader.queue.length > 0" class="btn btn-info" ng-repeat="item in uploader.queue">
+                        <span class="">
+                            <span class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }">
+                                {{ item.file.name }} | {{ item.file.size/1024/1024|number:2 }} MB
+                                <span ng-click="item.remove()" class="glyphicon glyphicon-remove-circle"></span>
+                            </span>
+                        </span>
+                    </span>
                     <button class="btn btn-primary" ng-click="send()">
                         {{::'room.send' | translate}}
                     </button>
                 </span>
-
             </div>
         </form>
     </div>

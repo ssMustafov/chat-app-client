@@ -85,6 +85,9 @@ angular.module('chatApp.authentication.service', [])
                 isAuthenticated: isAuthenticated,
                 refreshCookie: refreshCookie,
                 logout: logout,
-                changePassword: changePassword
+                changePassword: changePassword,
+                getToken: function () {
+                    return 'Bearer ' + $cookies.get(AUTHENTICATION_COOKIE_KEY);
+                }
             }
         }]);

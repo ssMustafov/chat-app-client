@@ -11,9 +11,9 @@ angular.module('chatApp.chat.room', ['ngRoute'])
             }
         });
     }])
-    .controller('ChatRoomCtrl', ['$scope', '$routeParams', 'ChatService', 'EventService', 'CHAT_EVENTS', 'IdentityService',
-            'RoomService', 'UsersService', 'Notification',
-            function ($scope, $routeParams, chatService, eventService, chatEvents, identityService, roomService, usersService, notification) {
+    .controller('ChatRoomCtrl', ['$scope', '$routeParams', '$sce', 'ChatService', 'EventService', 'CHAT_EVENTS', 'IdentityService',
+            'RoomService', 'UsersService', 'Notification', 'FileService',
+            function ($scope, $routeParams, $sce, chatService, eventService, chatEvents, identityService, roomService, usersService, notification, fileService) {
         var roomId = $routeParams.id;
 
         function parse(message) {
@@ -94,6 +94,8 @@ angular.module('chatApp.chat.room', ['ngRoute'])
 
         identityService.getCurrentUser().then(function (user) {
             $scope.model.user = user;
+            $scope.uploader.formData.push({userId: user.id});
+            $scope.uploader.formData.push({roomId: roomId});
         });
 
         roomService.getRoomById(roomId).then(function (room) {
@@ -104,6 +106,10 @@ angular.module('chatApp.chat.room', ['ngRoute'])
             chatService.subscribe(roomId);
 
             $scope.roomToEdit = room;
+        });
+
+        fileService.getFilesForRoom(roomId).then(function (files) {
+            $scope.roomFiles = files;
         });
 
         function onOpen(response) {
@@ -127,7 +133,9 @@ angular.module('chatApp.chat.room', ['ngRoute'])
 
         function onMessage(message) {
             if ($scope.connected) {
-                $scope.model.messages.push(parse(message));
+                var parsedMessage = parse(message);
+                parsedMessage.text = $sce.trustAsHtml(parsedMessage.text);
+                $scope.model.messages.push(parsedMessage);
             }
         }
 
@@ -206,16 +214,65 @@ angular.module('chatApp.chat.room', ['ngRoute'])
         };
 
         var input = $('#input');
+        input.keydown(function (event) {
+            var me = this;
+            var msg = $(me).val();
+            if (msg && msg.length > 0 && event.keyCode === 13) {
+                $scope.$apply(function () {
+                    onSendBtn();
+                });
+            }
+        });
         function onSendBtn() {
-            chatService.sendMessage({
-                user: $scope.model.user,
-                data: input.val()
-            });
-            input.val('');
+            if ($scope.uploader.queue.length > 0) {
+                $scope.uploader.queue.forEach(function (item) {
+                    item.upload();
+                });
+            } else {
+                var msg = input.val();
+                if (msg) {
+                    chatService.sendMessage({
+                        user: $scope.model.user,
+                        data: msg
+                    });
+                    input.val('');
+                }
+            }
         }
         $scope.send = onSendBtn;
 
         loadMessages();
+
+        $scope.uploader = fileService.getUploader(roomId,1);
+        $scope.uploader.onErrorItem = function (fileItem, response, status, headers) {
+            var message = 'Max allowed file size is 20 MB';
+            if (response && response.message) {
+                message = response.message;
+            }
+            notification.error({
+                title: 'Error',
+                message: message
+            });
+        };
+        $scope.uploader.onSuccessItem = function (item, response, status, headers) {
+            var file = response[0];
+            var href = file.location;
+            var message = '<a href="' + href + '" target="_blank">' + file.name + '</a>';
+            var msg = input.val();
+            if (msg) {
+                message += '<br/>';
+                message += msg;
+                input.val('');
+            }
+            chatService.sendMessage({
+                user: $scope.model.user,
+                data: message
+            });
+            $scope.roomFiles.push(file);
+        };
+        $scope.uploader.onCompleteAll = function () {
+            $scope.uploader.queue = [];
+        };
 
         eventService.subscribe(chatEvents.ON_OPEN, onOpen);
         eventService.subscribe(chatEvents.ON_CLIENT_TIMEOUT, onClientTimeout);
