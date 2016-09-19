@@ -101,7 +101,7 @@
                     </div>
                     <div class="media-body">
                         <h5 class="media-heading author">{{message.author.name || message.author.username}} <small class="time">| {{message.date | date:'shortDate'}} {{message.date|date:'shortTime'}}</small></h5>
-                        <span ng-bind-html="message.text" class="text"></span>
+                        <span ng-bind-html="message.text | smilies" class="text"></span>
                     </div>
                 </div>
             </div>
@@ -110,8 +110,12 @@
     <div class="row">
         <form role="form" class="form-horizontal">
             <div class="input-group">
-                <input ng-disabled="!connected" type="text" placeholder="{{::'room.message.send.text' | translate}}" class="form-control" id="input" autocomplete="off" />
+                <input ng-disabled="!connected" ng-model="::model.input" type="text"
+                       placeholder="{{::'room.message.send.text' | translate}}" class="form-control" id="input" autocomplete="off" />
                 <span class="input-group-btn">
+                    <span class="btn btn-default smiles-btn"
+                          smilies-selector="model.input"
+                          smilies-placement="left"></span>
                     <label ng-show="uploader.queue.length === 0" class="btn btn-default btn-file">
                         <span class="glyphicon glyphicon-paperclip"></span>
                         <input type="file" style="display: none;" nv-file-select="" uploader="uploader">

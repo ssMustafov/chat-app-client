@@ -32,3 +32,7 @@ body {
 .center {
   text-align: center;
 }
+
+.smiles-btn {
+  height: 39px;
+}

@@ -3,6 +3,9 @@
 angular.module('chatApp', [
     'ngRoute',
     'ngCookies',
+    'ngSanitize',
+    'ui.bootstrap',
+    'angular-smilies',
     'chatApp.chat.room',
     'chatApp.account.login',
     'chatApp.account.register',
@@ -19,7 +22,6 @@ angular.module('chatApp', [
     'chatApp.thumbnail.directive',
     'ui-notification',
     'blockUI',
-    'ui.bootstrap',
     'angularFileUpload',
     'pascalprecht.translate'
 ]).config(['$locationProvider', '$routeProvider', '$httpProvider', 'NotificationProvider', '$translateProvider',

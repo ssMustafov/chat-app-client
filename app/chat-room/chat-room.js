@@ -11,9 +11,9 @@ angular.module('chatApp.chat.room', ['ngRoute'])
             }
         });
     }])
-    .controller('ChatRoomCtrl', ['$scope', '$routeParams', '$sce', 'ChatService', 'EventService', 'CHAT_EVENTS', 'IdentityService',
+    .controller('ChatRoomCtrl', ['$scope', '$routeParams', 'ChatService', 'EventService', 'CHAT_EVENTS', 'IdentityService',
             'RoomService', 'UsersService', 'Notification', 'FileService',
-            function ($scope, $routeParams, $sce, chatService, eventService, chatEvents, identityService, roomService, usersService, notification, fileService) {
+            function ($scope, $routeParams, chatService, eventService, chatEvents, identityService, roomService, usersService, notification, fileService) {
         var roomId = $routeParams.id;
 
         function parse(message) {
@@ -134,7 +134,6 @@ angular.module('chatApp.chat.room', ['ngRoute'])
         function onMessage(message) {
             if ($scope.connected) {
                 var parsedMessage = parse(message);
-                parsedMessage.text = $sce.trustAsHtml(parsedMessage.text);
                 $scope.model.messages.push(parsedMessage);
             }
         }
@@ -236,6 +235,7 @@ angular.module('chatApp.chat.room', ['ngRoute'])
                         data: msg
                     });
                     input.val('');
+                    $scope.model.input = '';
                 }
             }
         }
@@ -273,6 +273,7 @@ angular.module('chatApp.chat.room', ['ngRoute'])
         $scope.uploader.onCompleteAll = function () {
             $scope.uploader.queue = [];
         };
+        $scope.model.input = '';
 
         eventService.subscribe(chatEvents.ON_OPEN, onOpen);
         eventService.subscribe(chatEvents.ON_CLIENT_TIMEOUT, onClientTimeout);
