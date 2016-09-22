@@ -16,7 +16,7 @@ angular.module('chatApp.chat.room', ['ngRoute'])
             function ($scope, $routeParams, chatService, eventService, chatEvents, identityService, roomService, usersService, notification, fileService) {
         var roomId = $routeParams.id;
 
-        function parse(message) {
+        function parse(message) {console.log(message.user);
             var date = typeof (message.receivedDate) === 'string' ? parseInt(message.receivedDate)
                 : message.receivedDate;
             return {

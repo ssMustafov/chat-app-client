@@ -36,3 +36,7 @@ body {
 .smiles-btn {
   height: 39px;
 }
+
+.time {
+  font-weight: bold;
+}

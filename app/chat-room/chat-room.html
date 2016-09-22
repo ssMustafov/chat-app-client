@@ -5,8 +5,8 @@
                 <div class="media">
                     <div class="col-md-8">
                         <div class="media-left media-top">
-                            <a href="javascript:void(0);">
-                                <img class="media-object" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+PCEtLQpTb3VyY2UgVVJMOiBob2xkZXIuanMvNjR4NjQKQ3JlYXRlZCB3aXRoIEhvbGRlci5qcyAyLjYuMC4KTGVhcm4gbW9yZSBhdCBodHRwOi8vaG9sZGVyanMuY29tCihjKSAyMDEyLTIwMTUgSXZhbiBNYWxvcGluc2t5IC0gaHR0cDovL2ltc2t5LmNvCi0tPjxkZWZzPjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+PCFbQ0RBVEFbI2hvbGRlcl8xNTZhZWE4OWY2NCB0ZXh0IHsgZmlsbDojQUFBQUFBO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1mYW1pbHk6QXJpYWwsIEhlbHZldGljYSwgT3BlbiBTYW5zLCBzYW5zLXNlcmlmLCBtb25vc3BhY2U7Zm9udC1zaXplOjEwcHQgfSBdXT48L3N0eWxlPjwvZGVmcz48ZyBpZD0iaG9sZGVyXzE1NmFlYTg5ZjY0Ij48cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIGZpbGw9IiNFRUVFRUUiLz48Zz48dGV4dCB4PSIxNC41IiB5PSIzNi41Ij42NHg2NDwvdGV4dD48L2c+PC9nPjwvc3ZnPg==" alt="avatar">
+                            <a href="javascript:void(0);" style="font-size: 32px">
+                                <span class="glyphicon glyphicon-th-list"></span>
                             </a>
                         </div>
                         <div class="media-body">
@@ -50,7 +50,8 @@
                             <div id="users-collapse" class="panel-collapse collapse in">
                                 <ul class="list-group">
                                     <li class="list-group-item" data-ng-repeat="user in roomUsers">
-                                        <span class="glyphicon glyphicon-user"></span>
+                                        <span ng-show="!user.image" class="glyphicon glyphicon-user"></span>
+                                        <img ng-show="user.image" ng-src="{{user.image}}" width="16" height="16">
                                         <span class="">{{user.name || user.username}}</span>
                                         <div ng-show="user.id === currentUser.id" class="pull-right room-users-actions">
                                             <a class="label label-info" title="Leave the room" ng-click="removeUserFromRoom(user)">X</a>
@@ -96,7 +97,8 @@
                 <div class="col-md-9 pull-left chat-message messages media" data-ng-repeat="message in model.messages" ng-class="{'current-user-bg': isCurrentUser(message.author.id)}">
                     <div class="media-left media-top">
                         <a href="javascript:void(0);">
-                            <span class="glyphicon glyphicon-user"></span>
+                            <span ng-show="!message.author.image" class="glyphicon glyphicon-user"></span>
+                            <img ng-show="message.author.image" ng-src="{{message.author.image}}" width="24" height="24" />
                         </a>
                     </div>
                     <div class="media-body">

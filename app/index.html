@@ -47,7 +47,8 @@
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" id="user-options">
-                        <span class="glyphicon glyphicon-user"></span>
+                        <span ng-show="!currentUser.image" class="glyphicon glyphicon-user"></span>
+                        <img ng-show="currentUser.image" ng-src="{{currentUser.image}}" width="24" height="24" />
                         {{currentUser.name || currentUser.username}}
                         <span class="caret"></span></a>
                     <ul class="dropdown-menu" aria-labelledby="user-options">
@@ -121,6 +122,14 @@
                 <div id="userSettingsTabsContent" class="tab-content">
                     <div class="tab-pane active in" id="info">
                         <form name="editUserForm" ng-submit="updateUser(editUserForm.$valid, userToEdit)" novalidate>
+                            <div class="form-group" ng-class="{ 'has-error' : editUserForm.image.$invalid && !editUserForm.image.$pristine }">
+                                <label for="image">{{::'user.settings.info.image' | translate}}</label>
+                                <img ng-show="userImage" ng-src="{{userImage}}" width="64" height="64" class="media-object" />
+                                <input type="file" accept="image/*" name="image" id="image" ng-model="image" class="form-control"
+                                       maxsize="1000" onload="imageChangeHandler"
+                                       base-sixty-four-input/>
+                                <span ng-show="editUserForm.image.$error.maxsize" class="help-block">{{::'user.settings.info.image.length' | translate}}</span>
+                            </div>
                             <div class="form-group">
                                 <label for="username">{{::'user.settings.info.username' | translate}}</label>
                                 <input type="text" name="username" id="username" ng-model="userToEdit.username" class="form-control" disabled="disabled" />
@@ -204,6 +213,7 @@
 <script src="bower_components/angular-ui-notification/dist/angular-ui-notification.min.js"></script>
 <script src="bower_components/angular-file-upload/dist/angular-file-upload.min.js"></script>
 <script src="bower_components/angular-translate/angular-translate.min.js"></script>
+<script src="bower_components/angular-base64-upload/dist/angular-base64-upload.min.js"></script>
 
 <script src="directives/thumbnail-directive.js"></script>
 

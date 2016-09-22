@@ -23,7 +23,8 @@ angular.module('chatApp', [
     'ui-notification',
     'blockUI',
     'angularFileUpload',
-    'pascalprecht.translate'
+    'pascalprecht.translate',
+    'naif.base64'
 ]).config(['$locationProvider', '$routeProvider', '$httpProvider', 'NotificationProvider', '$translateProvider',
         function ($locationProvider, $routeProvider, $httpProvider, notificationProvider, $translateProvider) {
     $locationProvider.hashPrefix('!');
@@ -130,6 +131,8 @@ function getTranslations() {
             'user.settings.tabs.password': 'Change password',
             'user.settings.tabs.language': 'Language',
             'user.settings.btn.close': 'Close',
+            'user.settings.info.image': 'Image',
+            'user.settings.info.image.length': 'Image must not exceed 1 MB',
             'user.settings.info.username': 'Username',
             'user.settings.info.email': 'Email',
             'user.settings.info.email.valid': 'Enter a valid email',
@@ -201,6 +204,8 @@ function getTranslations() {
             'user.settings.tabs.password': 'Промяна на парола',
             'user.settings.tabs.language': 'Език',
             'user.settings.btn.close': 'Затваряне',
+            'user.settings.info.image': 'Снимка',
+            'user.settings.info.image.length': 'Снимката трябва да е под 1 МБ',
             'user.settings.info.username': 'Потребителско име',
             'user.settings.info.email': 'Имейл',
             'user.settings.info.email.valid': 'Въведете валиден имейл адрес',

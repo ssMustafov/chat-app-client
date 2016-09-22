@@ -70,6 +70,9 @@ angular.module('chatApp.main.common', [])
                     if (user['email'] !== $scope.currentUser['email']) {
                         payload.email = user['email'];
                     }
+                    if (user['image']) {
+                        payload.image = user['image'];
+                    }
                     if (Object.keys(payload).length > 0) {
                         payload.id = $scope.currentUser.id;
                         usersService.updateUser(payload).then(function () {
@@ -94,6 +97,15 @@ angular.module('chatApp.main.common', [])
                 $cookies.put(LANGUAGE_COOKIE_KEY, $scope.userLanguage);
                 setLanguage();
                 $window.location.reload();
+            };
+
+            $scope.imageChangeHandler = function (event, reader, file, fileList, arr, encodedFile) {
+                if (encodedFile.filesize > 1400000) {
+                    reader.abort();
+                } else {
+                    $scope.userImage = 'data:' + encodedFile.filetype + ';base64,' + encodedFile.base64;
+                    $scope.userToEdit.image = $scope.userImage;
+                }
             };
 
             setLanguage();
