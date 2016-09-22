@@ -53,6 +53,7 @@ angular.module('chatApp.chat.room', ['ngRoute'])
                             data: message.message
                         })
                     });
+                    $scope.searchSuccess = true;
                 });
             }
         };
@@ -76,6 +77,7 @@ angular.module('chatApp.chat.room', ['ngRoute'])
             $scope.searchTerm = undefined;
             $scope.model.messages = [];
             loadMessages();
+            $scope.searchSuccess = false;
         };
 
         $scope.hasMessages = function () {

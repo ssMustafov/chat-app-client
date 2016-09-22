@@ -20,10 +20,10 @@
                                 <div class="input-group">
                                     <input type="text" placeholder="{{::'room.messages.search' | translate}}" class="form-control" ng-model="searchTerm" />
                                     <span class="input-group-btn">
-                                        <button class="btn btn-default" type="button" ng-click="search()">
+                                        <button ng-show="!searchSuccess" class="btn btn-default" type="button" ng-click="search()">
                                             <span class="glyphicon glyphicon-search"></span>
                                         </button>
-                                        <button class="btn btn-default" type="button" ng-click="clearSearch()" ng-disabled="!searchTerm">
+                                        <button ng-show="searchSuccess" class="btn btn-default" type="button" ng-click="clearSearch()" ng-disabled="!searchTerm">
                                             <span class="glyphicon glyphicon-remove"></span>
                                         </button>
                                         <button class="btn btn-default" data-toggle="modal" data-target=".room-settings" ng-click="onSettingsDialogOpen()">
@@ -52,8 +52,8 @@
                                     <li class="list-group-item" data-ng-repeat="user in roomUsers">
                                         <span class="glyphicon glyphicon-user"></span>
                                         <span class="">{{user.name || user.username}}</span>
-                                        <div class="pull-right room-users-actions">
-                                            <a class="label label-info" title="Remove user from the room" ng-click="removeUserFromRoom(user)">X</a>
+                                        <div ng-show="user.id === currentUser.id" class="pull-right room-users-actions">
+                                            <a class="label label-info" title="Leave the room" ng-click="removeUserFromRoom(user)">X</a>
                                         </div>
                                     </li>
                                 </ul>
