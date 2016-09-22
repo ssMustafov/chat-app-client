@@ -102,7 +102,8 @@
                         </a>
                     </div>
                     <div class="media-body">
-                        <h5 class="media-heading author">{{message.author.name || message.author.username}} <small class="time">| {{message.date | date:'shortDate'}} {{message.date|date:'shortTime'}}</small></h5>
+                        <h5 class="media-heading author">{{message.author.name || message.author.username}}
+                            <small class="time">| {{message.date | date:'dd.MM.yyyy'}} {{message.date|date:'H:mm'}}</small></h5>
                         <span ng-bind-html="message.text | smilies" class="text"></span>
                     </div>
                 </div>
