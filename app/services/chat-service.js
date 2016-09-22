@@ -31,9 +31,8 @@ angular.module('chatApp.chat.service', [])
                 reconnectOnServerError: true,
                 enableXDR: true,
                 timeout: 0,
-                shared: true
+                shared: false
             };
-
 
             request.onOpen = function (response) {
                 eventService.fire(CHAT_EVENTS.ON_OPEN, {
