@@ -185,7 +185,6 @@ angular.module('chatApp.chat.room', ['ngRoute'])
 
         $scope.addUserToRoom = function (user) {
             roomService.addUserToRoom(roomId, user.id).then(function () {
-                //$scope.roomUsers.push(user);
                 if ($scope.allUsers) {
                     $scope.allUsers = removeUserById($scope.allUsers, user.id);
                 }
@@ -194,9 +193,7 @@ angular.module('chatApp.chat.room', ['ngRoute'])
         };
 
         $scope.removeUserFromRoom = function (user) {
-            roomService.removeUserFromRoom(roomId, user.id).then(function () {
-                //$scope.roomUsers = removeUserById($scope.roomUsers, user.id, true);
-            });
+            roomService.removeUserFromRoom(roomId, user.id);
         };
 
         $scope.updateRoom = function (isValid, room) {
