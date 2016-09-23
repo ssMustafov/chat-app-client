@@ -70,7 +70,6 @@
             <li class="list-group-item room-list-item" data-ng-repeat="room in rooms" id="room-{{room.id}}" ng-click="openRoom(room.id)"
                 ng-class="{'active': isActiveRoom(room.id)}">
                 {{room.name}}
-                <span class="badge">14</span>
             </li>
         </ul>
     </div>
@@ -225,6 +224,7 @@
 <script src="services/room-service.js"></script>
 <script src="services/users-service.js"></script>
 <script src="services/file-service.js"></script>
+<script src="services/notifications-service.js"></script>
 
 <script src="ngConstants.js"></script>
 <script src="app.js"></script>

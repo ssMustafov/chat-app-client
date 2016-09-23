@@ -4,7 +4,9 @@ angular.module('chatApp.main.common', [])
     .controller('MainController', [
         '$scope', '$location', '$cookies', '$translate', '$window',
         'IdentityService', 'AuthenticationService', 'AUTH_EVENTS', 'EventService', 'RoomService', 'Notification', 'UsersService',
-        function ($scope, $location, $cookies, $translate, $window, identityService, authenticationService, AUTH_EVENTS, eventService, roomService, notification, usersService) {
+        'NotificationsService',
+        function ($scope, $location, $cookies, $translate, $window, identityService, authenticationService, AUTH_EVENTS,
+                  eventService, roomService, notification, usersService, notificationsService) {
             var LANGUAGE_COOKIE_KEY = '__USER_LANGUAGE__';
 
             $scope.logout = function () {
@@ -29,14 +31,97 @@ angular.module('chatApp.main.common', [])
 
                     roomService.getRooms(user.id).then(function (data) {
                         $scope.rooms = data;
+                        notificationsService.start(processNotifications);
                     });
 
                     $scope.userToEdit = _.assign({}, user);
                 });
             }
 
+            function processNotifications(notification) {
+                if (notification.type === 'message') {
+                    processMessageNotification(notification);
+                }
+                if (notification.type === 'joined') {
+                    processJoinedNotification(notification);
+                }
+                if (notification.type === 'left') {
+                    processLeftNotification(notification);
+                }
+            }
+            
+            function processLeftNotification(notification) {
+                if (notification.user.id === $scope.currentUser.id) {
+                    removeRoomFromList(notification.roomId);
+                    if ($scope.isActiveRoom(notification.roomId)) {
+                        $location.path('/chat/room/' + $scope.rooms[0].id);
+                    }
+                } else {
+                    eventService.fire('USER_LEFT', notification.user);
+                }
+            }
+            
+            function removeRoomFromList(roomId) {
+                roomId = parseInt(roomId) || '';
+                _.remove($scope.rooms, function(room) {
+                    return room.id === roomId;
+                });
+            }
+
+            function processJoinedNotification(notification) {
+                if (!roomExists(notification.roomId)) {
+                    roomService.getRoomById(notification.roomId).then(function (room) {
+                        $scope.rooms.push(room);
+                    });
+                }
+                if ($scope.isActiveRoom(notification.roomId)) {
+                    eventService.fire('USER_JOINED', {
+                        user: notification.user
+                    });
+                }
+            }
+
+            function roomExists(roomId) {
+                roomId = parseInt(roomId) || '';
+                for (var i = 0; i < $scope.rooms.length; i++) {
+                    if ($scope.rooms[i].id === roomId) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            function processMessageNotification(notification) {
+                function doesRoomHaveBadge(element) {
+                    return !!element.has('span').length;
+                }
+
+                function appendBadge(element) {
+                    element.append('<span class="badge"><span class="glyphicon glyphicon-comment"></span></span>');
+                }
+
+                function selectRoomFromList(roomId) {
+                    return $('#room-' + roomId);
+                }
+
+                var roomId = notification.roomId;
+                if ($scope.isActiveRoom(roomId)) {
+                    return;
+                }
+
+                var element = selectRoomFromList(roomId);
+                if (!doesRoomHaveBadge(element)) {
+                    appendBadge(element);
+                }
+            }
+
+            function removeBadge(roomId) {
+                $('#room-' + roomId + ' .badge').remove();
+            }
+
             $scope.openRoom = function (roomId) {
                 $location.path('/chat/room/' + roomId);
+                removeBadge(roomId);
             };
 
             $scope.createRoom = function (isValid, room) {

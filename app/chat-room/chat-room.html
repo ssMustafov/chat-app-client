@@ -48,7 +48,7 @@
                                 </h4>
                             </div>
                             <div id="users-collapse" class="panel-collapse collapse in">
-                                <ul class="list-group">
+                                <ul class="list-group" id="room-users">
                                     <li class="list-group-item" data-ng-repeat="user in roomUsers">
                                         <span ng-show="!user.image" class="glyphicon glyphicon-user"></span>
                                         <img ng-show="user.image" ng-src="{{user.image}}" width="16" height="16">

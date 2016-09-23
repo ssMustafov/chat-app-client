@@ -185,7 +185,7 @@ angular.module('chatApp.chat.room', ['ngRoute'])
 
         $scope.addUserToRoom = function (user) {
             roomService.addUserToRoom(roomId, user.id).then(function () {
-                $scope.roomUsers.push(user);
+                //$scope.roomUsers.push(user);
                 if ($scope.allUsers) {
                     $scope.allUsers = removeUserById($scope.allUsers, user.id);
                 }
@@ -195,7 +195,7 @@ angular.module('chatApp.chat.room', ['ngRoute'])
 
         $scope.removeUserFromRoom = function (user) {
             roomService.removeUserFromRoom(roomId, user.id).then(function () {
-                $scope.roomUsers = removeUserById($scope.roomUsers, user.id, true);
+                //$scope.roomUsers = removeUserById($scope.roomUsers, user.id, true);
             });
         };
 
@@ -276,6 +276,21 @@ angular.module('chatApp.chat.room', ['ngRoute'])
             $scope.uploader.queue = [];
         };
         $scope.model.input = '';
+
+        function onUserJoined(data) {
+            $scope.roomUsers.push(data.user);
+            $scope.$apply();
+        }
+
+        function onUserLeft(user) {
+            _.remove($scope.roomUsers, function(currentUser) {
+                return currentUser.id === user.id;
+            });
+            $scope.$apply();
+        }
+
+        eventService.subscribe('USER_JOINED', onUserJoined);
+        eventService.subscribe('USER_LEFT', onUserLeft);
 
         eventService.subscribe(chatEvents.ON_OPEN, onOpen);
         eventService.subscribe(chatEvents.ON_CLIENT_TIMEOUT, onClientTimeout);

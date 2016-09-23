@@ -19,6 +19,7 @@ angular.module('chatApp', [
     'chatApp.room.service',
     'chatApp.users.service',
     'chatApp.file.service',
+    'chatApp.notifications.service',
     'chatApp.thumbnail.directive',
     'ui-notification',
     'blockUI',
